@@ -1,11 +1,15 @@
 package Main;
 
+import Managers.Task;
+
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Admin extends User{
-    private TaskManager taskManager; // i sent TaskManager object here bec it will be used inside Admin class
-    public Admin(String username, String password, TaskManager taskManager) {
+    private AdminTaskService taskManager; // I used TaskManager object here bec it will be used inside Admin class
+    public Admin(String username, String password, AdminTaskService taskManager) {
         super(username, password,true);
         this.taskManager = taskManager;
     }
@@ -19,7 +23,8 @@ public class Admin extends User{
             System.out.println("1. Create Task");
             System.out.println("2. View All Tasks");
             System.out.println("3. Delete Task");
-            System.out.println("4. Logout");
+            System.out.println("4. Edit Task");
+            System.out.println("5. Logout");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -40,12 +45,24 @@ public class Admin extends User{
                     break;
                 case 2:
                     taskManager.listTasks();
+                    break;
                 case 3:
-                    System.out.print("Enter Task ID to delete: ");
-                    int taskId = scanner.nextInt();
-                    //taskManager.deleteTask(taskId);
+                    System.out.print("Enter Task Title to delete: ");
+                    String taskTit = scanner.nextLine();
+                    taskManager.deleteTask(taskTit);
                     break;
                 case 4:
+                    System.out.print("Enter Task Title to edit: ");
+                    String taskTit2 = scanner.nextLine();
+                    System.out.println("Enter Task Information to edit (title/description/priority/date): ");
+                    String toBeEdited = scanner.nextLine();
+                    System.out.println("Enter information: ");
+                    String updated = scanner.nextLine();
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put(toBeEdited,updated);
+                    taskManager.editTask(taskTit2,updates);
+                    break;
+                case 5:
                     System.out.println("Logging out...");
                     return;
                 default:

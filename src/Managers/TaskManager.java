@@ -1,15 +1,57 @@
-package Main;
+package Managers;
+
+import Main.AdminTaskService;
+import Main.WorkerTaskService;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
-public class TaskManager {
+public class TaskManager implements AdminTaskService, WorkerTaskService {
     private List<Task> tasks=new ArrayList<Task>();
 
     public void addTask(Task task){
         tasks.add(task);
     }
+    public void deleteTask(String taskTitle){
+        for(Task task:tasks){
+            if(task.getTaskTitle().equals(taskTitle)){
+                tasks.remove(task);
+            }
+        }
+
+    }
+
+    public void editTask(String taskTitle, Map<String,Object> updates){
+        for(Task task:tasks){
+            if(task.getTaskTitle().equals(taskTitle)){
+                updates.forEach( (key,value)->{
+                    switch(key){
+                        case "title":
+                            task.setTaskTitle((String) value);
+                            break;
+                        case "description":
+                            task.setTaskDescription((String) value);
+                            break;
+                        case "priority":
+                            task.setPriority((Integer) value);
+                            break;
+                        case "dueDate":
+                            task.setDueDate((LocalDate) value);
+                            break;
+                        default:
+                            System.out.println("Invalid field: " + key);
+
+                    }
+                });
+            }
+            break;
+        }
+        System.out.println("Task updated successfully!");
+
+    }
+
     public void listTasks(){
         for(Task task:tasks){
             System.out.println(task);
@@ -32,7 +74,7 @@ public class TaskManager {
             }
         }
     }
-    public void filterTaskByCompletedStatus(String username,boolean completed){
+    public void  filterTaskByCompletedStatus(String username,boolean completed){
         for(Task task:tasks){
             if (task.getAssignedUser().equals(username) && task.getIsCompleted()==completed){
                 System.out.println(task);

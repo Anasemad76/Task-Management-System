@@ -1,18 +1,22 @@
 package Main;
 
+import Managers.Task;
+
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class Worker extends User{
-    private TaskManager taskManager;
-    public Worker(String username, String password, TaskManager taskManager) {
+    private WorkerTaskService taskManager;
+    public Worker(String username, String password, WorkerTaskService taskManager) {
         super(username, password,false);
         this.taskManager = taskManager;
     }
 
+
     @Override
     public void displayMenu() {
+
         System.out.println("Welcome to the Worker Menu");
         Scanner scanner = new Scanner(System.in);
         while (true) {

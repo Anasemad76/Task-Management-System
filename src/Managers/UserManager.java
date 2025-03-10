@@ -1,12 +1,16 @@
-package Main;
+package Managers;
+
+import Main.Admin;
+import Main.User;
+import Main.Worker;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserManager {
-    private Map<String,User> users =new HashMap<>(); //acts like database for now
+    private Map<String, User> users =new HashMap<>(); //acts like database for now
 
-    public void registerUser(String username, String password, boolean isAdmin,TaskManager taskManager) {
+    public void registerUser(String username, String password, boolean isAdmin, TaskManager taskManager) {
         if (users.containsKey(username)) {
             System.out.println("Username already exists!");
             return;

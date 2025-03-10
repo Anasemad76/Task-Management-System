@@ -1,4 +1,4 @@
-package Main;
+package Managers;
 
 import java.time.LocalDate;
 
@@ -19,26 +19,46 @@ public class Task {
         this.dueDate =dueDate;
         this.priority =priority;
     }
+
+    // IMP note: all setters are package prv (bec we dont want worker to call setters only admins can from TaskManager only)
+
     public void markCompleted() {
         this.isCompleted = true;
     }
     public String getTaskTitle() {
         return taskTitle;
     }
+     void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
+    }
+     void setTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
+    }
     public String getAssignedUser() {
         return assignedUser;
+    }
+     void setAssignedUser(String assignedUser) {
+        this.assignedUser = assignedUser;
     }
 
     public boolean getIsCompleted() {
         return isCompleted;
     }
+
     public int getPriority() {
         return priority;
+    }
+     void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public LocalDate  getDueDate() {
         return dueDate;
     }
+     void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
     @Override
     public String toString() {
         return "Task: " + taskTitle + " | Assigned To: " + assignedUser + " | Completed: " + isCompleted;

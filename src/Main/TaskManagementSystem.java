@@ -1,13 +1,16 @@
 package Main;
 
 
+import Managers.TaskManager;
+import Managers.UserManager;
+
 import java.util.Scanner;
 
 public class TaskManagementSystem {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        UserManager userManager = new UserManager();
-        TaskManager taskManager = new TaskManager();
+        UserManager userManager = new UserManager(); //like my database table for users thats why we should have only one instance
+        TaskManager taskManager = new TaskManager(); // databse for tasks for all users thats why we need to have only one instance
 
         System.out.println("Welcome to Task Management System");
 
