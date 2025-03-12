@@ -21,7 +21,8 @@ public class DatabaseConnection {
 //            while (rs.next()) {
 //                System.out.print("ID: " + rs.getInt("id"));
 //                System.out.print(", First: " + rs.getString("username"));
-//                System.out.println(", Last: " + rs.getString("password"));
+//                System.out.println(", Password: " + rs.getString("password"));
+//                System.out.println(", IsAdmin: " + rs.getBoolean("is_admin"));
 //
 //            }
 //            rs.close();
