@@ -34,6 +34,9 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
                         case "description":
                             task.setTaskDescription((String) value);
                             break;
+                        case "username":
+                            task.setAssignedUser((String) value);
+                            break;
                         case "priority":
                             task.setPriority((Integer) value);
                             break;
