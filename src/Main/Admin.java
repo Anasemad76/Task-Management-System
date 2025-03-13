@@ -54,7 +54,7 @@ public class Admin extends User{
                 case 4:
                     System.out.print("Enter Task Title to edit: ");
                     String taskTit2 = scanner.nextLine();
-                    System.out.println("Enter Task Information to edit (title/description/priority/date): ");
+                    System.out.println("Enter Task Information to edit (title/description/username/priority/date): ");
                     String toBeEdited = scanner.nextLine();
                     System.out.println("Enter information: ");
                     String updated = scanner.nextLine();

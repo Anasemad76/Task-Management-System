@@ -1,12 +1,14 @@
 package Main;
 
+import Managers.Task;
+
 import java.time.LocalDate;
 import java.util.List;
 
 public interface WorkerTaskService {
-    void listUserTasks(String username);
+    List<Task> listUserTasks(String username);
     void markTaskAsCompleted(String username, String taskTitle);
-    void filterTaskByCompletedStatus(String username,boolean completed);
-    void filterTaskByPriority(String username,int priority);
+    List<Task> filterTaskByCompletedStatus(String username,boolean completed);
+    List<Task> filterTaskByPriority(String username,int priority);
     void filterTaskByDueDate(String username,LocalDate dueDate,String condition);
 }

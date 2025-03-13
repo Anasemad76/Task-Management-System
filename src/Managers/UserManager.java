@@ -1,23 +1,21 @@
 package Managers;
 
-import Main.Admin;
 import Main.User;
-import Main.Worker;
-import dao.RegistrationDAO;
+import dao.UserDAO;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserManager {
-    private Map<String, User> users =new HashMap<>(); //acts like database for now
-    private RegistrationDAO registrationDAO;
+    private Map<String, User> users =new HashMap<>(); //acts like database for now(will be deleted after having a DB)
+    private UserDAO userDAO;
 
-    public UserManager(RegistrationDAO registrationDAO) {
-        this.registrationDAO = registrationDAO;
+    public UserManager(UserDAO userDAO) {
+        this.userDAO = userDAO;
     }
 
     public boolean registerUser(String username, String password, boolean isAdmin, TaskManager taskManager) {
-        boolean isSuccessful =registrationDAO.registerUserDB(username, password, isAdmin) ;
+        boolean isSuccessful = userDAO.registerUserDB(username, password, isAdmin) ;
         if(isSuccessful) {
             System.out.println("User registered Successfully!");
         }else {
@@ -41,9 +39,9 @@ public class UserManager {
 //        System.out.println("User registered Successfully!");
     }
 
-    public User loginUser(String username, String password){
+    public User loginUser(String username, String password,TaskManager taskManager) {
 
-        return registrationDAO.loginUser(username, password);
+        return userDAO.loginUser(username, password,taskManager);
 
 //        User user = users.get(username);
 //        if(user != null && user.authenticate(password)){

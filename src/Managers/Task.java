@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 
 public class Task {
+     private int taskId;
     private String taskTitle;
     private String taskDescription;
     private String assignedUser;
@@ -28,11 +29,17 @@ public class Task {
     public String getTaskTitle() {
         return taskTitle;
     }
+    void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
      void setTaskTitle(String taskTitle) {
         this.taskTitle = taskTitle;
     }
      void setTaskDescription(String taskDescription) {
         this.taskDescription = taskDescription;
+    }
+    public String getTaskDescription() {
+        return taskDescription;
     }
     public String getAssignedUser() {
         return assignedUser;

@@ -2,16 +2,18 @@ package dao;
 
 import Main.Admin;
 import Main.User;
+import Main.Worker;
+import Managers.TaskManager;
 
 import java.sql.*;
 
-public class RegistrationDAO {
+public class UserDAO {
     private Connection conn;
-    public RegistrationDAO(Connection conn) {
+    public UserDAO(Connection conn) {
         this.conn=conn;
     }
     public boolean registerUserDB(String username, String password, boolean isAdmin){
-        String sql = "insert into users (username, password, isAdmin) values (?, ?, ?)";
+        String sql = "insert into users (username, password, is_admin) values (?, ?, ?)";
         try(PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setString(1, username);
             stmt.setString(2, password);
@@ -24,7 +26,7 @@ public class RegistrationDAO {
         }
     }
 
-    public User loginUser(String username, String password){
+    public User loginUser(String username, String password, TaskManager taskManager) {
         String sql = "select * from users where username=? and password=?";
         try(PreparedStatement stmt= conn.prepareStatement(sql)){
             stmt.setString(1, username);
@@ -33,12 +35,12 @@ public class RegistrationDAO {
 
 
             if( rs.next() ){
-                boolean isAdmin = rs.getBoolean("isAdmin");
+                boolean isAdmin = rs.getBoolean("is_admin");
                 if (isAdmin){
-                    return new Admin(username,password,);
+                    return new Admin(username,password,taskManager);
 
                 }else{
-                    return new Admin(username,password,);
+                    return new Worker(username,password,taskManager);
 
                 }
 
