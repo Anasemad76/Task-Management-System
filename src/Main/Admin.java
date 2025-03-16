@@ -54,29 +54,34 @@ public class Admin extends User{
                 case 4:
                     System.out.print("Enter Task Title to edit: ");
                     String taskTit2 = scanner.nextLine();
-                    System.out.println("Enter Task Information to edit (title/description/username/priority/date): ");
-                    String toBeEdited = scanner.nextLine();
-                    switch (toBeEdited) {
-                        case "title":
-                            toBeEdited = "task_title";
-                            break;
-                        case "description":
-                            toBeEdited = "task_description";
-                            break;
-                        case "username":
-                            toBeEdited = "assigned_user";
-                            break;
-                        case "priority":
-                            toBeEdited = "priority";
-                            break;
-                        case "date":
-                            toBeEdited = "due_date";
-                            break;
-                    }
-                    System.out.println("Enter information: ");
-                    String updated = scanner.nextLine();
                     Map<String, Object> updates = new HashMap<>();
-                    updates.put(toBeEdited,updated);
+                    while(true) {
+                        System.out.println("Enter Task Information to edit (title/description/username/priority/date/done): ");
+                        String toBeEdited = scanner.nextLine();
+                        if (toBeEdited.equalsIgnoreCase("Done")) {
+                            break;
+                        }
+                        switch (toBeEdited) {
+                            case "title":
+                                toBeEdited = "task_title";
+                                break;
+                            case "description":
+                                toBeEdited = "task_description";
+                                break;
+                            case "username":
+                                toBeEdited = "assigned_user";
+                                break;
+                            case "priority":
+                                toBeEdited = "priority";
+                                break;
+                            case "date":
+                                toBeEdited = "due_date";
+                                break;
+                        }
+                        System.out.println("Enter information: ");
+                        String updated = scanner.nextLine();
+                        updates.put(toBeEdited, updated);
+                    }
                     taskManager.editTask(taskTit2,updates);
                     break;
                 case 5:
