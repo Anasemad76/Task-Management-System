@@ -10,5 +10,5 @@ public interface WorkerTaskService {
     void markTaskAsCompleted(String username, String taskTitle);
     List<Task> filterTaskByCompletedStatus(String username,boolean completed);
     List<Task> filterTaskByPriority(String username,int priority);
-    void filterTaskByDueDate(String username,LocalDate dueDate,String condition);
+    List<Task> filterTaskByDueDate(String username,LocalDate dueDate,String condition);
 }

@@ -3,8 +3,10 @@ package dao;
 import Managers.Task;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TaskDAO {
     private Connection conn;
@@ -104,6 +106,50 @@ public class TaskDAO {
         }
         return false;
     }
+    public void editTask(String taskTitle, Map<String,Object> updates) {
+        if (updates.isEmpty()) {
+            System.out.println("No updates provided.");
+            return;
+        }
+        StringBuilder sql = new StringBuilder("UPDATE tasks SET ");
+        updates.forEach((key, value) -> sql.append(key).append(" = ?, ") );
+        sql.setLength(sql.length()-2);
+        sql.append(" WHERE task_title=?");
+        try(PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+            int index = 1;
+            for(Map.Entry<String,Object> entry:updates.entrySet()){
+                Object value = entry.getValue();
+                if(value instanceof String){
+                    pstmt.setString(index++, (String) value);
+                }
+                else if(value instanceof Integer){
+                    pstmt.setInt(index++, (Integer) value);
+                }
+                else if(value instanceof Boolean){
+                    pstmt.setBoolean(index++, (Boolean) value);
+                }
+                else if(value instanceof LocalDate){
+                    pstmt.setDate(index++, Date.valueOf((LocalDate) value));
+                }else {
+                    System.out.println("Invalid field type for key: " + entry.getKey());
+                    return;
+                }
+            }
+            pstmt.setString(index,taskTitle);
+            int rows = pstmt.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Task updated successfully");
+            }else{
+                System.out.println("No task found with title: " +taskTitle);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+
+
+    }
 
     //complete by taskId
     public boolean taskCompleted(int taskId,String assignedUser) {
@@ -184,6 +230,46 @@ public class TaskDAO {
             e.printStackTrace();
         }
         return tasks;
+    }
+
+    public List<Task> filterByTaskDUEDate(String username, LocalDate dueDate,String condition) {
+        List<Task> filteredTasks = new ArrayList<>();
+        String sql = "SELECT * FROM tasks WHERE assigned_user = ? AND ";
+        switch(condition){
+            case "before":
+                sql += "due_date < ? ";
+                break;
+            case "after":
+                sql += "due_date > ? ";
+                break;
+            case "on":
+                sql += "due_date = ? ";
+                break;
+            default:
+                System.out.println("Invalid condition: Use 'before', 'after', or 'on'");
+                return filteredTasks;
+        }
+        try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setString(1, username);
+            pstmt.setDate(2, Date.valueOf(dueDate));
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Task task = new Task(
+                        rs.getString("task_title"),
+                        rs.getString("task_description"),
+                        rs.getString("assigned_user"),
+                        rs.getBoolean("is_completed"),
+                        rs.getInt("priority"),
+                        rs.getDate("due_date").toLocalDate()
+                );
+                //task.setTaskId(rs.getInt("id");
+                filteredTasks.add(task);
+            }
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return filteredTasks;
     }
 
 

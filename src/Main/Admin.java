@@ -56,6 +56,23 @@ public class Admin extends User{
                     String taskTit2 = scanner.nextLine();
                     System.out.println("Enter Task Information to edit (title/description/username/priority/date): ");
                     String toBeEdited = scanner.nextLine();
+                    switch (toBeEdited) {
+                        case "title":
+                            toBeEdited = "task_title";
+                            break;
+                        case "description":
+                            toBeEdited = "task_description";
+                            break;
+                        case "username":
+                            toBeEdited = "assigned_user";
+                            break;
+                        case "priority":
+                            toBeEdited = "priority";
+                            break;
+                        case "date":
+                            toBeEdited = "due_date";
+                            break;
+                    }
                     System.out.println("Enter information: ");
                     String updated = scanner.nextLine();
                     Map<String, Object> updates = new HashMap<>();
