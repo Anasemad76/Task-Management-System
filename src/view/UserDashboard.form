@@ -55,9 +55,9 @@
             <properties>
               <model>
                 <item value="All"/>
-                <item value="priority"/>
-                <item value="due date"/>
-                <item value="completion status"/>
+                <item value="Priority"/>
+                <item value="Due date"/>
+                <item value="Completion status"/>
               </model>
             </properties>
           </component>

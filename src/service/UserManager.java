@@ -23,34 +23,12 @@ public class UserManager {
         }
         return isSuccessful;
 
-//        if (users.containsKey(username)) {
-//            System.out.println("Username already exists!");
-//            return;
-//        }
-//
-//        if (isAdmin){
-//            users.put(username,new Admin(username,password,taskManager));
-//        }
-//        else{
-//            users.put(username,new Worker(username,password,taskManager));
-//
-//        }
-//
-//        System.out.println("User registered Successfully!");
+
     }
 
     public User loginUser(String username, String password,TaskManager taskManager) {
 
         return userDAO.loginUser(username, password,taskManager);
 
-//        User user = users.get(username);
-//        if(user != null && user.authenticate(password)){
-//            System.out.println("User logged in successfully!");
-//            return user;
-//        }
-//        else{
-//            System.out.println("Username or password is incorrect!");
-//            return null;
-//        }
     }
 }

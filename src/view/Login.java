@@ -4,8 +4,11 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import Managers.TaskManager;
-import Managers.UserManager;
+import model.user.Admin;
+import model.user.User;
+import model.user.Worker;
+import service.TaskManager;
+import service.UserManager;
 
 public class Login extends JFrame{
     private JPanel loginPanel;
@@ -30,16 +33,16 @@ public class Login extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 String username = userName.getText();
                 String pass = new String(password.getPassword());
-                User user = userManager.loginUser(username,pass);
+                User user = userManager.loginUser(username,pass,taskManager);
                 if (user.getIsAdmin()) {
                     JOptionPane.showMessageDialog(loginButton,userName.getText()+" ,Hello");
-                    Admin admin = new Admin(username, pass, taskManager);
-                    admin.displayMenu();
+                    AdminDashboard  adminDashboard= new AdminDashboard(user);
+                    //user.displayMenu();
                 } else {
                     JOptionPane.showMessageDialog(loginButton,userName.getText()+" ,Hello");
-                    Worker worker = new Worker(username, pass, taskManager);
-                    UserDashboard userDashboard = new UserDashboard();
-                    worker.displayMenu();
+
+                    UserDashboard userDashboard = new UserDashboard(user,taskManager);
+                    //user.displayMenu();
                 }
 
 

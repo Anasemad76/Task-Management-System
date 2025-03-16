@@ -3,9 +3,16 @@ package view;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 
-import Managers.TaskManager;
-import Managers.UserManager;
+import dao.DatabaseConnection;
+import dao.TaskDAO;
+import dao.UserDAO;
+import model.user.Admin;
+import model.user.User;
+import model.user.Worker;
+import service.TaskManager;
+import service.UserManager;
 
 public class Register extends JFrame{
     private JTextField userName;
@@ -21,7 +28,9 @@ public class Register extends JFrame{
     private UserManager userManager;
     private TaskManager taskManager;
 
-    public Register() {
+    public Register(UserManager userManager, TaskManager taskManager) {
+        this.userManager=userManager;
+        this.taskManager=taskManager;
         registerBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -33,11 +42,18 @@ public class Register extends JFrame{
                     return;
                 }
                 boolean isAdmin = adminCheckBox.isSelected();
-                userManager = new UserManager();
-                taskManager = new TaskManager();
-                userManager.registerUser(username, pass1, isAdmin,taskManager);
-                JOptionPane.showMessageDialog(registerBtn,userName.getText()+" ,Hello");
-                UserDashboard userDashboard = new UserDashboard();
+                boolean isRegisteredSuccessfully=userManager.registerUser(username, pass1, isAdmin,taskManager);
+                if (isRegisteredSuccessfully) {
+                    User user = userManager.loginUser(username,pass1,taskManager);
+                    JOptionPane.showMessageDialog(registerBtn,userName.getText()+" ,Hello");
+                    if (user.getIsAdmin()) {
+                        AdminDashboard adminDashboard = new AdminDashboard(user);
+                    }else {
+                        UserDashboard userDashboard = new UserDashboard(user,taskManager);
+                    }
+
+                }
+
             }
         });
         loginButton.addActionListener(new ActionListener() {
@@ -52,12 +68,25 @@ public class Register extends JFrame{
     }
 
 public static void main(String[] args) {
-    Register r=new Register();
-    r.setContentPane(r.registerPanel);
-    r.setTitle("Register");
-    r.setBounds(400, 200, 450, 300);
+    Connection connection = null;
+    try {
+        connection= DatabaseConnection.getConnection();
+        UserDAO userDAO = new UserDAO(connection);
+        TaskDAO taskDAO = new TaskDAO(connection);
+        UserManager userManager = new UserManager(userDAO);
+        TaskManager taskManager = new TaskManager(taskDAO);
+        Register r=new Register(userManager,taskManager);
+        r.setContentPane(r.registerPanel);
+        r.setTitle("Register");
+        r.setBounds(400, 200, 450, 300);
 //    r.setSize(500,500);
-    r.setVisible(true);
-    r.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        r.setVisible(true);
+        r.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+
+
+
 }
 }
