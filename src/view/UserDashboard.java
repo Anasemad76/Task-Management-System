@@ -5,6 +5,7 @@ import model.user.User;
 import model.user.Worker;
 import service.TaskManager;
 import model.task.Task;
+import service.UserManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -27,10 +28,12 @@ public class UserDashboard  extends JFrame {
     private JScrollPane scrollPane;
     private User user;
     private TaskManager taskManager;
+    private UserManager userManager;
 
-    public UserDashboard(User user,TaskManager taskManager) {
+    public UserDashboard(User user,TaskManager taskManager,UserManager userManager) {
         this.user = user;
         this.taskManager=taskManager;
+        this.userManager=userManager;
 
 
         // Table column names
@@ -111,6 +114,15 @@ public class UserDashboard  extends JFrame {
                         List<Task> filteredTasks=taskManager.filterTaskByCompletedStatus(user.getUsername(), isCompleted);
                         printFilteredTasks(model,filteredTasks);
                 }
+            }
+        });
+        logOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                Register registerForm = new Register(userManager, taskManager);
+                registerForm.setVisible(true);
+
             }
         });
     }

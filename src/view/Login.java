@@ -36,12 +36,13 @@ public class Login extends JFrame{
                 User user = userManager.loginUser(username,pass,taskManager);
                 if (user.getIsAdmin()) {
                     JOptionPane.showMessageDialog(loginButton,userName.getText()+" ,Hello");
-                    AdminDashboard  adminDashboard= new AdminDashboard(user);
+                    dispose();
+                    AdminDashboard  adminDashboard= new AdminDashboard(user,taskManager,userManager);
                     //user.displayMenu();
                 } else {
                     JOptionPane.showMessageDialog(loginButton,userName.getText()+" ,Hello");
-
-                    UserDashboard userDashboard = new UserDashboard(user,taskManager);
+                    dispose();
+                    UserDashboard userDashboard = new UserDashboard(user,taskManager,userManager);
                     //user.displayMenu();
                 }
 

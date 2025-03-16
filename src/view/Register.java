@@ -31,6 +31,12 @@ public class Register extends JFrame{
     public Register(UserManager userManager, TaskManager taskManager) {
         this.userManager=userManager;
         this.taskManager=taskManager;
+        this.setContentPane(this.registerPanel);
+        this.setTitle("Register");
+        this.setBounds(400, 200, 450, 300);
+//    r.setSize(500,500);
+        this.setVisible(true);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         registerBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -47,9 +53,11 @@ public class Register extends JFrame{
                     User user = userManager.loginUser(username,pass1,taskManager);
                     JOptionPane.showMessageDialog(registerBtn,userName.getText()+" ,Hello");
                     if (user.getIsAdmin()) {
-                        AdminDashboard adminDashboard = new AdminDashboard(user);
+                        dispose();
+                        AdminDashboard adminDashboard = new AdminDashboard(user,taskManager,userManager);
                     }else {
-                        UserDashboard userDashboard = new UserDashboard(user,taskManager);
+                        dispose();
+                        UserDashboard userDashboard = new UserDashboard(user,taskManager,userManager);
                     }
 
                 }
@@ -76,12 +84,6 @@ public static void main(String[] args) {
         UserManager userManager = new UserManager(userDAO);
         TaskManager taskManager = new TaskManager(taskDAO);
         Register r=new Register(userManager,taskManager);
-        r.setContentPane(r.registerPanel);
-        r.setTitle("Register");
-        r.setBounds(400, 200, 450, 300);
-//    r.setSize(500,500);
-        r.setVisible(true);
-        r.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     } catch (Exception e) {
         throw new RuntimeException(e);
     }
