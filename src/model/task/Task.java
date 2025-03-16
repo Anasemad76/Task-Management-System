@@ -1,4 +1,4 @@
-package Managers;
+package model.task;
 
 import java.time.LocalDate;
 

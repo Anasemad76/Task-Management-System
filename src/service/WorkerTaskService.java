@@ -1,6 +1,6 @@
-package Main;
+package service;
 
-import Managers.Task;
+import model.task.Task;
 
 import java.time.LocalDate;
 import java.util.List;

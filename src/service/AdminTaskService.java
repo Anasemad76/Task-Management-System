@@ -1,6 +1,6 @@
-package Main;
+package service;
 
-import Managers.Task;
+import model.task.Task;
 
 import java.util.List;
 import java.util.Map;

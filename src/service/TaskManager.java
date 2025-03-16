@@ -1,8 +1,7 @@
-package Managers;
+package service;
 
-import Main.AdminTaskService;
-import Main.WorkerTaskService;
 import dao.TaskDAO;
+import model.task.Task;
 
 import java.util.ArrayList;
 import java.time.LocalDate;

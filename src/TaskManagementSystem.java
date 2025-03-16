@@ -1,11 +1,9 @@
-package Main;
-
-
-import Managers.TaskManager;
-import Managers.UserManager;
+import service.TaskManager;
+import service.UserManager;
 import dao.DatabaseConnection;
 import dao.TaskDAO;
 import dao.UserDAO;
+import model.user.User;
 
 import java.sql.Connection;
 import java.sql.SQLException;

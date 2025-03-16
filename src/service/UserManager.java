@@ -1,6 +1,6 @@
-package Managers;
+package service;
 
-import Main.User;
+import model.user.User;
 import dao.UserDAO;
 
 import java.util.HashMap;

@@ -1,9 +1,9 @@
 package dao;
 
-import Main.Admin;
-import Main.User;
-import Main.Worker;
-import Managers.TaskManager;
+import model.user.Admin;
+import model.user.User;
+import model.user.Worker;
+import service.TaskManager;
 
 import java.sql.*;
 

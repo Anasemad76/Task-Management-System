@@ -1,13 +1,14 @@
-package Main;
+package model.user;
 
-import Managers.Task;
+import service.AdminTaskService;
+import model.task.Task;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Admin extends User{
+public class Admin extends User {
     private AdminTaskService taskManager; // I used TaskManager object here bec it will be used inside Admin class
     public Admin(String username, String password, AdminTaskService taskManager) {
         super(username, password,true);

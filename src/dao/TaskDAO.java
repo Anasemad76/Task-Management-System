@@ -1,6 +1,6 @@
 package dao;
 
-import Managers.Task;
+import model.task.Task;
 
 import java.sql.*;
 import java.time.LocalDate;

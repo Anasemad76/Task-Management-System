@@ -1,12 +1,12 @@
-package Main;
+package model.user;
 
-import Managers.Task;
+import service.WorkerTaskService;
 
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class Worker extends User{
+public class Worker extends User {
     private WorkerTaskService taskManager;
     public Worker(String username, String password, WorkerTaskService taskManager) {
         super(username, password,false);
