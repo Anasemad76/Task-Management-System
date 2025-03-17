@@ -15,14 +15,13 @@ public class TaskManagementSystem {
             Scanner scanner = new Scanner(System.in);
             UserDAO registerDao = new UserDAO(connection);
             TaskDAO taskDAO = new TaskDAO(connection);
-            UserManager userManager = new UserManager(registerDao); //like my database table for users thats why we should have only one instance
-            TaskManager taskManager = new TaskManager(taskDAO); // databse for tasks for all users thats why we need to have only one instance
+            // in previous versions used to be db and only instated once, now just acts as a service/utilities
+            UserManager userManager = new UserManager(registerDao);
+            TaskManager taskManager = new TaskManager(taskDAO);
 
             System.out.println("Welcome to Task Management System");
 
-            // Register an admin and a user for testing
-//            userManager.registerUser("admin", "admin123", true, taskManager);
-//            userManager.registerUser("user1", "user123", false, taskManager);
+
 
             while (true) {
                 System.out.print("Enter username to login: ");
@@ -33,13 +32,6 @@ public class TaskManagementSystem {
                 User user = userManager.loginUser(username, password,taskManager);
                 user.displayMenu(); // polymorphism
 
-//                if (user.getIsAdmin()) {
-//                    Admin admin = new Admin(username, password, taskManager);
-//                    admin.displayMenu();
-//                } else {
-//                    Worker worker = new Worker(username, password, taskManager);
-//                    worker.displayMenu();
-//                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserManager {
-    private Map<String, User> users =new HashMap<>(); //acts like database for now(will be deleted after having a DB)
     private UserDAO userDAO;
 
     public UserManager(UserDAO userDAO) {

@@ -18,9 +18,6 @@ public abstract class User{
     public boolean getIsAdmin() {
         return isAdmin;
     }
-    public boolean authenticate(String password) {
-        return this.password.equals(password);
-    }
 
     public abstract void displayMenu();
 }

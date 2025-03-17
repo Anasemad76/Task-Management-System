@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 
 public class Task {
-     private int taskId;
+//    private int taskId;
     private String taskTitle;
     private String taskDescription;
     private String assignedUser;
@@ -21,32 +21,20 @@ public class Task {
         this.priority =priority;
     }
 
-    // IMP note: all setters are package prv (bec we dont want worker to call setters only admins can from TaskManager only)
 
-    public void markCompleted() {
-        this.isCompleted = true;
-    }
+
+
     public String getTaskTitle() {
         return taskTitle;
     }
-    void setTaskId(int taskId) {
-        this.taskId = taskId;
-    }
-     void setTaskTitle(String taskTitle) {
-        this.taskTitle = taskTitle;
-    }
-     void setTaskDescription(String taskDescription) {
-        this.taskDescription = taskDescription;
-    }
+
     public String getTaskDescription() {
         return taskDescription;
     }
     public String getAssignedUser() {
         return assignedUser;
     }
-     void setAssignedUser(String assignedUser) {
-        this.assignedUser = assignedUser;
-    }
+
 
     public boolean getIsCompleted() {
         return isCompleted;
@@ -55,15 +43,9 @@ public class Task {
     public int getPriority() {
         return priority;
     }
-     void setPriority(int priority) {
-        this.priority = priority;
-    }
 
     public LocalDate  getDueDate() {
         return dueDate;
-    }
-     void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
     }
 
     @Override
