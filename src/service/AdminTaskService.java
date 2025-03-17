@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface AdminTaskService {
-    void addTask(Task task);
-    void editTask(String taskTitle, Map<String,Object> updates);
-    void deleteTask(String taskTitle);
+    boolean addTask(Task task);
+    boolean editTask(String taskTitle, Map<String,Object> updates);
+    boolean deleteTask(String taskTitle);
     List<Task> listTasks();
 }

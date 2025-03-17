@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 
 public class Task {
-//    private int taskId;
+    private int taskId;
     private String taskTitle;
     private String taskDescription;
     private String assignedUser;
@@ -12,7 +12,18 @@ public class Task {
     private int priority;
     private LocalDate  dueDate;
 
+    //for terminal
     public Task(String taskTitle, String taskDescription, String assignedUser, boolean isCompleted, int priority, LocalDate dueDate) {
+        this.taskTitle = taskTitle;
+        this.taskDescription = taskDescription;
+        this.assignedUser = assignedUser;
+        this.isCompleted = isCompleted;
+        this.dueDate =dueDate;
+        this.priority =priority;
+    }
+    // for database
+    public Task(int taskId,String taskTitle, String taskDescription, String assignedUser, boolean isCompleted, int priority, LocalDate dueDate) {
+        this.taskId = taskId;
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.assignedUser = assignedUser;
@@ -26,6 +37,9 @@ public class Task {
 
     public String getTaskTitle() {
         return taskTitle;
+    }
+    public int getTaskId() {
+        return taskId;
     }
 
     public String getTaskDescription() {

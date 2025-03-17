@@ -21,6 +21,7 @@ public class TaskDAO {
             ResultSet rs = stmt.executeQuery("select * from tasks");
             while (rs.next()) {
                 Task task = new Task(
+                        rs.getInt("id"),
                         rs.getString("task_title"),
                         rs.getString("task_description"),
                         rs.getString("assigned_user"),
@@ -28,7 +29,7 @@ public class TaskDAO {
                         rs.getInt("priority"),
                         rs.getDate("due_date").toLocalDate()
                 );
-                //task.setTaskId(rs.getInt("id");
+
                 tasks.add(task);
 
             }
@@ -46,6 +47,7 @@ public class TaskDAO {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 Task task = new Task(
+                        rs.getInt("id"),
                         rs.getString("task_title"),
                         rs.getString("task_description"),
                         rs.getString("assigned_user"),
@@ -53,7 +55,7 @@ public class TaskDAO {
                         rs.getInt("priority"),
                         rs.getDate("due_date").toLocalDate()
                 );
-                //task.setTaskId(rs.getInt("id");
+
                 tasks.add(task);
             }
 
@@ -106,10 +108,11 @@ public class TaskDAO {
         }
         return false;
     }
-    public void editTask(String taskTitle, Map<String,Object> updates) {
+    // for terminal
+    public boolean editTask(String taskTitle, Map<String,Object> updates) {
         if (updates.isEmpty()) {
             System.out.println("No updates provided.");
-            return;
+            return false;
         }
         StringBuilder sql = new StringBuilder("UPDATE tasks SET ");
         updates.forEach((key, value) -> sql.append(key).append(" = ?, ") );
@@ -132,21 +135,24 @@ public class TaskDAO {
                     pstmt.setDate(index++, Date.valueOf((LocalDate) value));
                 }else {
                     System.out.println("Invalid field type for key: " + entry.getKey());
-                    return;
+                    return false;
                 }
             }
             pstmt.setString(index,taskTitle);
             int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 System.out.println("Task updated successfully");
+                return true;
             }else{
                 System.out.println("No task found with title: " +taskTitle);
+                return false;
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
 
         }
+        return false;
 
 
     }

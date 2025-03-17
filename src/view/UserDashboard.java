@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class UserDashboard  extends JFrame {
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        String[] columnNames = {"Task Title", "Task Description", "Priority", "Due Date", "Completed"};
+        String[] columnNames = {"Task ID","Task Title", "Task Description", "Priority", "Due Date", "Completed"};
         // Table model to hold data
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         tasksTable.setModel(model);
@@ -132,10 +133,11 @@ public class UserDashboard  extends JFrame {
         List<Task> workerTasks =taskManager.listUserTasks(user.getUsername());
         for(Task task:workerTasks){
             model.addRow(new Object[]{
+                    task.getTaskId(),
                     task.getTaskTitle(),
                     task.getTaskDescription(),
                     task.getPriority(),
-                    task.getDueDate(),
+                    task.getDueDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     task.getIsCompleted()
             });
         }
@@ -145,10 +147,11 @@ public class UserDashboard  extends JFrame {
         model.setRowCount(0);
         for (Task task : taskList) {
             model.addRow(new Object[]{
+                    task.getTaskId(),
                     task.getTaskTitle(),
                     task.getTaskDescription(),
                     task.getPriority(),
-                    task.getDueDate(),
+                    task.getDueDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     task.getIsCompleted()
             });
 

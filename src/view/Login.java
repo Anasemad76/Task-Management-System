@@ -4,9 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import model.user.Admin;
 import model.user.User;
-import model.user.Worker;
 import service.TaskManager;
 import service.UserManager;
 
@@ -34,16 +32,23 @@ public class Login extends JFrame{
                 String username = userName.getText();
                 String pass = new String(password.getPassword());
                 User user = userManager.loginUser(username,pass,taskManager);
-                if (user.getIsAdmin()) {
-                    JOptionPane.showMessageDialog(loginButton,userName.getText()+" ,Hello");
-                    dispose();
-                    AdminDashboard  adminDashboard= new AdminDashboard(user,taskManager,userManager);
-                    //user.displayMenu();
-                } else {
-                    JOptionPane.showMessageDialog(loginButton,userName.getText()+" ,Hello");
-                    dispose();
-                    UserDashboard userDashboard = new UserDashboard(user,taskManager,userManager);
-                    //user.displayMenu();
+                if (user != null) {
+
+
+                    if (user.getIsAdmin()) {
+                        JOptionPane.showMessageDialog(loginPanel, "Hello, " + userName.getText());
+                        dispose();
+                        AdminDashboard adminDashboard = new AdminDashboard(user, taskManager,userManager);
+                        //user.displayMenu();
+                    } else {
+                        JOptionPane.showMessageDialog(loginPanel, "Hello, " + userName.getText());
+                        dispose();
+                        UserDashboard userDashboard = new UserDashboard(user, taskManager, userManager);
+                        //user.displayMenu();
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(loginPanel, "Invalid username or password");
+
                 }
 
 

@@ -16,21 +16,26 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
     }
 
 
-    public void addTask(Task task) {
+    public boolean addTask(Task task) {
         boolean isSuccessfulQuery=taskDAO.addNewTask(task);
         System.out.println(isSuccessfulQuery ? "Task added successfully" : "Task wasn't added successfully");
+        return isSuccessfulQuery;
     }
 
 
-    public void deleteTask(String taskTitle){
+    public boolean deleteTask(String taskTitle){
        boolean isSuccessfulQuery=taskDAO.removeTask(taskTitle);
         System.out.println(isSuccessfulQuery ? "Task Deleted successfully" : "Task wasn't Deleted successfully");
+        return isSuccessfulQuery;
     }
 
-    public void editTask(String taskTitle, Map<String,Object> updates){
-           taskDAO.editTask(taskTitle,updates);
+    // for terminal
+    public boolean editTask(String taskTitle, Map<String,Object> updates){
+           boolean isSuccessful= taskDAO.editTask(taskTitle,updates);
+           return isSuccessful;
 
     }
+
 
 
     public List<Task> listTasks(){

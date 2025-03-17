@@ -8,9 +8,7 @@ import java.sql.Connection;
 import dao.DatabaseConnection;
 import dao.TaskDAO;
 import dao.UserDAO;
-import model.user.Admin;
 import model.user.User;
-import model.user.Worker;
 import service.TaskManager;
 import service.UserManager;
 
