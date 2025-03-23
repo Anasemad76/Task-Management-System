@@ -7,13 +7,18 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import jakarta.persistence.*;
 
+@Entity
+@DiscriminatorValue(value = "Worker")
 public class Worker extends User {
+    @Transient // Prevents JPA from persisting this field
     private WorkerTaskService taskManager;
     public Worker(String username, String password, WorkerTaskService taskManager) {
         super(username, password,false);
         this.taskManager = taskManager;
     }
+    public Worker(){}
 
 
     @Override

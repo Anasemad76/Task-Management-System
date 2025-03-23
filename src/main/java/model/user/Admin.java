@@ -9,13 +9,18 @@ import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;
+import jakarta.persistence.*;
 
+@Entity
+@DiscriminatorValue(value = "Admin")
 public class Admin extends User {
+    @Transient // Prevents JPA from persisting this field
     private AdminTaskService taskManager; // I used TaskManager object here bec it will be used inside Admin class
     public Admin(String username, String password, AdminTaskService taskManager) {
         super(username, password,true);
         this.taskManager = taskManager;
     }
+    public Admin(){}
 
     @Override
     public void displayMenu() {
