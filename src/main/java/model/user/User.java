@@ -1,5 +1,10 @@
 package model.user;
 import jakarta.persistence.*;
+import model.task.Task;
+import service.AdminTaskService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -17,7 +22,11 @@ public abstract class User{
     private String password;
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin;
-
+    //CascadeType.ALL bec I want if anything happens in task table to affect task list
+    //orphanRemoval=true bec if I deleted a task from this list I want it to be deleted from database too
+    @OneToMany(mappedBy = "assignedUser",cascade = CascadeType.ALL,orphanRemoval = true)
+    List<Task> tasks=new ArrayList<>();
+    // tasks should remain in list and database even if completed
     public User(){
 
     }
@@ -37,5 +46,6 @@ public abstract class User{
     }
 
     public abstract void displayMenu();
+
 }
 

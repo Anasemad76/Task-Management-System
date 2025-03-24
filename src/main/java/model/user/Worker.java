@@ -20,6 +20,9 @@ public class Worker extends User {
     }
     public Worker(){}
 
+    public void setTaskManager(WorkerTaskService taskManager) {
+        this.taskManager = taskManager;
+    }
 
     @Override
     public void displayMenu() {

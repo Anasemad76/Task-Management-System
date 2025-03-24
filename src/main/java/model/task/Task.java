@@ -2,6 +2,7 @@ package model.task;
 
 import java.time.LocalDate;
 import jakarta.persistence.*;
+import model.user.User;
 
 @Entity
 @Table(name = "tasks")
@@ -16,9 +17,11 @@ public class Task {
     private String taskTitle;
     @Column(name = "task_description")
     private String taskDescription;
-    // check thisssssssssssssssssssssssssssss
-    @Column(name = "assigned_user")
-    private String assignedUser;
+
+
+    @ManyToOne()
+    @JoinColumn(name = "user_id") //not needed here as hibernate knows that this will be a foreign key by default
+    private User assignedUser;
     // columnDef =can be used to specify the exact SQL column definition
     @Column(name = "is_completed", nullable = false ,columnDefinition = "BIT DEFAULT 0")
     private boolean isCompleted;
@@ -29,17 +32,17 @@ public class Task {
     private LocalDate  dueDate;
 
     public Task() {}
-    //for terminal
-    public Task(String taskTitle, String taskDescription, String assignedUser, boolean isCompleted, int priority, LocalDate dueDate) {
+
+    // if no asignedUser yet
+    public Task(String taskTitle, String taskDescription, boolean isCompleted, int priority, LocalDate dueDate) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
-        this.assignedUser = assignedUser;
         this.isCompleted = isCompleted;
         this.dueDate =dueDate;
         this.priority =priority;
     }
-    // for database
-    public Task(int taskId,String taskTitle, String taskDescription, String assignedUser, boolean isCompleted, int priority, LocalDate dueDate) {
+    // if assignedUser was determined when creating the task
+    public Task(String taskTitle, String taskDescription, User assignedUser, boolean isCompleted, int priority, LocalDate dueDate) {
         this.taskId = taskId;
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
@@ -62,13 +65,16 @@ public class Task {
     public String getTaskDescription() {
         return taskDescription;
     }
-    public String getAssignedUser() {
+    public User getAssignedUser() {
         return assignedUser;
     }
 
 
     public boolean getIsCompleted() {
         return isCompleted;
+    }
+    public void setIsCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 
     public int getPriority() {

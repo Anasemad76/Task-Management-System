@@ -1,3 +1,4 @@
+import jakarta.persistence.*;
 import service.TaskManager;
 import service.UserManager;
 import dao.DatabaseConnection;
@@ -11,10 +12,10 @@ import java.util.Scanner;
 
 public class TaskManagementSystem {
     public static void main(String[] args) {
-        try(Connection connection=DatabaseConnection.getConnection()) {
+            EntityManager em=DatabaseConnection.getEntityManager();
             Scanner scanner = new Scanner(System.in);
-            UserDAO registerDao = new UserDAO(connection);
-            TaskDAO taskDAO = new TaskDAO(connection);
+            UserDAO registerDao = new UserDAO(em);
+            TaskDAO taskDAO = new TaskDAO(em);
             // in previous versions used to be db and only instated once, now just acts as a service/utilities
             UserManager userManager = new UserManager(registerDao);
             TaskManager taskManager = new TaskManager(taskDAO);
@@ -22,20 +23,36 @@ public class TaskManagementSystem {
             System.out.println("Welcome to Task Management System");
 
 
+            try{
+                while (true) {
+                    System.out.print("Enter username to login: ");
+                    String username = scanner.nextLine();
+                    System.out.print("Enter password: ");
+                    String password = scanner.nextLine();
 
-            while (true) {
-                System.out.print("Enter username to login: ");
-                String username = scanner.nextLine();
-                System.out.print("Enter password: ");
-                String password = scanner.nextLine();
+                    User user = userManager.loginUser(username, password,taskManager);
+                    user.displayMenu(); // polymorphism
 
-                User user = userManager.loginUser(username, password,taskManager);
-                user.displayMenu(); // polymorphism
+                }
 
-            }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+//    public static void main(String[] args) {
+//        System.out.println("Starting JPA with Hibernate... 🚀");
+//
+//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hibernate");
+//        EntityManager em = emf.createEntityManager();
+//
+//        em.getTransaction().begin();
+//
+//        // Just trigger table creation
+//        System.out.println("Tables created successfully! ✅");
+//
+//        em.getTransaction().commit();
+//        em.close();
+//        emf.close();
+//    }
 }
 

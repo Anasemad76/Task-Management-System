@@ -22,6 +22,9 @@ public class Admin extends User {
     }
     public Admin(){}
 
+    public void setTaskManager(AdminTaskService taskManager) {
+        this.taskManager = taskManager;
+    }
     @Override
     public void displayMenu() {
         System.out.println("Welcome to the Admin Menu");

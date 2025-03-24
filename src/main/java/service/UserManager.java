@@ -1,7 +1,9 @@
 package service;
 
+import model.user.Admin;
 import model.user.User;
 import dao.UserDAO;
+import model.user.Worker;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +16,13 @@ public class UserManager {
     }
 
     public boolean registerUser(String username, String password, boolean isAdmin, TaskManager taskManager) {
-        boolean isSuccessful = userDAO.registerUserDB(username, password, isAdmin) ;
+        User user=null;
+        if (isAdmin) {
+            user=new Admin(username, password,taskManager);
+        }else {
+            user=new Worker(username,password,taskManager);
+        }
+        boolean isSuccessful = userDAO.registerUserDB(user) ;
         if(isSuccessful) {
             System.out.println("User registered Successfully!");
         }else {
