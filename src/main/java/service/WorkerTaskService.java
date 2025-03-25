@@ -1,14 +1,15 @@
 package service;
 
 import model.task.Task;
+import model.user.User;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface WorkerTaskService {
-    List<Task> listUserTasks(String username);
+    List<Task> listUserTasks(User user);
     void markTaskAsCompleted(String username, String taskTitle);
-    List<Task> filterTaskByCompletedStatus(String username,boolean completed);
-    List<Task> filterTaskByPriority(String username,int priority);
-    List<Task> filterTaskByDueDate(String username,LocalDate dueDate,String condition);
+    List<Task> filterTaskByCompletedStatus(User user,boolean completed);
+    List<Task> filterTaskByPriority(User user,int priority);
+    List<Task> filterTaskByDueDate(User user,LocalDate dueDate,String condition);
 }

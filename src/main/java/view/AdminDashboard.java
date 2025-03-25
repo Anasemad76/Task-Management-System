@@ -182,7 +182,7 @@ public class AdminDashboard extends JFrame {
                             titleDB = model.getValueAt(row, 1).toString();
                         }
 
-
+                        // 7ot hena asamy el feilds fel entity msh el table for JPA
                         switch (columnName) {
                             case "Title":
                                 columnName = "task_title";

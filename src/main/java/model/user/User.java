@@ -26,6 +26,9 @@ public abstract class User{
     //orphanRemoval=true bec if I deleted a task from this list I want it to be deleted from database too
     @OneToMany(mappedBy = "assignedUser",cascade = CascadeType.ALL,orphanRemoval = true)
     List<Task> tasks=new ArrayList<>();
+    //Note:When an entity has a lazy-loaded relationship (like @OneToMany or @ManyToOne), calling a getter may trigger a query.
+
+
     // tasks should remain in list and database even if completed
     public User(){
 
@@ -35,6 +38,7 @@ public abstract class User{
         this.username = username;
         this.password = password;
         this.isAdmin = isAdmin;
+
     }
 
 
@@ -44,6 +48,20 @@ public abstract class User{
     public boolean getIsAdmin() {
         return isAdmin;
     }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+    // this will change state of the list in memory not in db, it needs to be merged to db by em to change db
+    public void addTask(Task task) {
+        tasks.add(task);
+        task.setAssignedUser(this);
+    }
+    public void removeTask(Task task) {
+        tasks.remove(task);
+        task.setAssignedUser(null);
+    }
+
 
     public abstract void displayMenu();
 

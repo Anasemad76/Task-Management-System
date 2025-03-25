@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class TaskDAO {
     private EntityManager em;
@@ -196,38 +198,76 @@ public class TaskDAO {
     }
 
 
+//    // for terminal
+//    public boolean editTask(String taskTitle, Map<String,Object> updates) {
+//        if (updates.isEmpty()) {
+//            System.out.println("No updates provided.");
+//            return false;
+//        }
+//        StringBuilder sql = new StringBuilder("UPDATE tasks SET ");
+//        updates.forEach((key, value) -> sql.append(key).append(" = ?, ") );
+//        sql.setLength(sql.length()-2);
+//        sql.append(" WHERE task_title=?");
+//        try(PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+//            int index = 1;
+//            for(Map.Entry<String,Object> entry:updates.entrySet()){
+//                Object value = entry.getValue();
+//                if(value instanceof String){
+//                    pstmt.setString(index++, (String) value);
+//                }
+//                else if(value instanceof Integer){
+//                    pstmt.setInt(index++, (Integer) value);
+//                }
+//                else if(value instanceof Boolean){
+//                    pstmt.setBoolean(index++, (Boolean) value);
+//                }
+//                else if(value instanceof LocalDate){
+//                    pstmt.setDate(index++, Date.valueOf((LocalDate) value));
+//                }else {
+//                    System.out.println("Invalid field type for key: " + entry.getKey());
+//                    return false;
+//                }
+//            }
+//            pstmt.setString(index,taskTitle);
+//            int rows = pstmt.executeUpdate();
+//            if (rows > 0) {
+//                System.out.println("Task updated successfully");
+//                return true;
+//            }else{
+//                System.out.println("No task found with title: " +taskTitle);
+//                return false;
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//
+//        }
+//        return false;
+//
+//
+//    }
+
     // for terminal
     public boolean editTask(String taskTitle, Map<String,Object> updates) {
         if (updates.isEmpty()) {
             System.out.println("No updates provided.");
             return false;
         }
-        StringBuilder sql = new StringBuilder("UPDATE tasks SET ");
-        updates.forEach((key, value) -> sql.append(key).append(" = ?, ") );
+        StringBuilder sql = new StringBuilder("UPDATE Task t SET ");
+        updates.forEach( (key, value) -> {
+            sql.append("t.").append(key).append(" = :").append(key).append(", ");
+        });
+
         sql.setLength(sql.length()-2);
-        sql.append(" WHERE task_title=?");
-        try(PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
-            int index = 1;
-            for(Map.Entry<String,Object> entry:updates.entrySet()){
-                Object value = entry.getValue();
-                if(value instanceof String){
-                    pstmt.setString(index++, (String) value);
-                }
-                else if(value instanceof Integer){
-                    pstmt.setInt(index++, (Integer) value);
-                }
-                else if(value instanceof Boolean){
-                    pstmt.setBoolean(index++, (Boolean) value);
-                }
-                else if(value instanceof LocalDate){
-                    pstmt.setDate(index++, Date.valueOf((LocalDate) value));
-                }else {
-                    System.out.println("Invalid field type for key: " + entry.getKey());
-                    return false;
-                }
-            }
-            pstmt.setString(index,taskTitle);
-            int rows = pstmt.executeUpdate();
+        sql.append(" WHERE t.taskTitle= :title");
+        Query query = em.createQuery(sql.toString());
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            updates.forEach((key, value) -> query.setParameter(key, value));
+            query.setParameter("title", taskTitle);
+            int rows = query.executeUpdate();
+            tx.commit();
             if (rows > 0) {
                 System.out.println("Task updated successfully");
                 return true;
@@ -236,12 +276,13 @@ public class TaskDAO {
                 return false;
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             e.printStackTrace();
-
+            return false;
         }
-        return false;
-
 
     }
 
@@ -259,7 +300,8 @@ public class TaskDAO {
 //        }
 //        return false;
 //    }
-//complete by taskId
+
+    //complete by taskId
     public boolean taskCompleted(int taskId) {
         EntityTransaction tx = em.getTransaction();
         try{
@@ -317,96 +359,135 @@ public class TaskDAO {
 
     }
 
-    public List<Task> filterByCompletion(String username,boolean isCompleted) {
-        List<Task> tasks = new ArrayList<Task>();
-        String sql="select * from tasks where assigned_user=? and is_completed=?";
-        try(PreparedStatement pstmt=conn.prepareStatement(sql)){
-            pstmt.setString(1,username);
-            pstmt.setBoolean(2,isCompleted);
-            ResultSet rs=pstmt.executeQuery();
-            while (rs.next()) {
-                Task task = new Task(
-                        rs.getString("task_title"),
-                        rs.getString("task_description"),
-                        rs.getString("assigned_user"),
-                        rs.getBoolean("is_completed"),
-                        rs.getInt("priority"),
-                        rs.getDate("due_date").toLocalDate()
-                );
-                //task.setTaskId(rs.getInt("id");
-                tasks.add(task);
+//    public List<Task> filterByCompletion(String username,boolean isCompleted) {
+//        List<Task> tasks = new ArrayList<Task>();
+//        String sql="select * from tasks where assigned_user=? and is_completed=?";
+//        try(PreparedStatement pstmt=conn.prepareStatement(sql)){
+//            pstmt.setString(1,username);
+//            pstmt.setBoolean(2,isCompleted);
+//            ResultSet rs=pstmt.executeQuery();
+//            while (rs.next()) {
+//                Task task = new Task(
+//                        rs.getString("task_title"),
+//                        rs.getString("task_description"),
+//                        rs.getString("assigned_user"),
+//                        rs.getBoolean("is_completed"),
+//                        rs.getInt("priority"),
+//                        rs.getDate("due_date").toLocalDate()
+//                );
+//                //task.setTaskId(rs.getInt("id");
+//                tasks.add(task);
+//            }
+//
+//        }catch(SQLException e){
+//            e.printStackTrace();
+//        }
+//        return tasks;
+//    }
+    public List<Task> filterByCompletion(User user,boolean isCompleted) {
+            List<Task> filteredTasks = new ArrayList<>();
+            for (Task task : user.getTasks()){ // this is will trigger call to database
+                if(task.getIsCompleted() == isCompleted){
+                    filteredTasks.add(task);
+                }
             }
-
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return tasks;
+            return filteredTasks;
     }
 
-    public List<Task> filterByTaskPriority(String username,int priority) {
-        List<Task> tasks = new ArrayList<Task>();
-        String sql="select * from tasks where assigned_user=? and priority=?";
-        try(PreparedStatement pstmt=conn.prepareStatement(sql)){
-            pstmt.setString(1,username);
-            pstmt.setInt(2,priority);
-            ResultSet rs=pstmt.executeQuery();
-            while (rs.next()) {
-                Task task = new Task(
-                        rs.getString("task_title"),
-                        rs.getString("task_description"),
-                        rs.getString("assigned_user"),
-                        rs.getBoolean("is_completed"),
-                        rs.getInt("priority"),
-                        rs.getDate("due_date").toLocalDate()
-                );
-                //task.setTaskId(rs.getInt("id");
-                tasks.add(task);
-            }
-
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return tasks;
+//    public List<Task> filterByTaskPriority(String username,int priority) {
+//        List<Task> tasks = new ArrayList<Task>();
+//        String sql="select * from tasks where assigned_user=? and priority=?";
+//        try(PreparedStatement pstmt=conn.prepareStatement(sql)){
+//            pstmt.setString(1,username);
+//            pstmt.setInt(2,priority);
+//            ResultSet rs=pstmt.executeQuery();
+//            while (rs.next()) {
+//                Task task = new Task(
+//                        rs.getString("task_title"),
+//                        rs.getString("task_description"),
+//                        rs.getString("assigned_user"),
+//                        rs.getBoolean("is_completed"),
+//                        rs.getInt("priority"),
+//                        rs.getDate("due_date").toLocalDate()
+//                );
+//                //task.setTaskId(rs.getInt("id");
+//                tasks.add(task);
+//            }
+//
+//        }catch(SQLException e){
+//            e.printStackTrace();
+//        }
+//        return tasks;
+//    }
+    public List<Task> filterByTaskPriority(User user,int priority) {
+        TypedQuery<Task> query= em.createQuery("SELECT t FROM Task t WHERE t.assignedUser= :user AND t.priority = :priority", Task.class);
+        query.setParameter("user", user);
+        query.setParameter("priority", priority);
+        return query.getResultList();
     }
 
-    public List<Task> filterByTaskDUEDate(String username, LocalDate dueDate,String condition) {
-        List<Task> filteredTasks = new ArrayList<>();
-        String sql = "SELECT * FROM tasks WHERE assigned_user = ? AND ";
+//    public List<Task> filterByTaskDUEDate(String username, LocalDate dueDate,String condition) {
+//        List<Task> filteredTasks = new ArrayList<>();
+//        String sql = "SELECT * FROM tasks WHERE assigned_user = ? AND ";
+//        switch(condition){
+//            case "before":
+//                sql += "due_date < ? ";
+//                break;
+//            case "after":
+//                sql += "due_date > ? ";
+//                break;
+//            case "on":
+//                sql += "due_date = ? ";
+//                break;
+//            default:
+//                System.out.println("Invalid condition: Use 'before', 'after', or 'on'");
+//                return filteredTasks;
+//        }
+//        try(PreparedStatement pstmt = conn.prepareStatement(sql)){
+//            pstmt.setString(1, username);
+//            pstmt.setDate(2, Date.valueOf(dueDate));
+//            ResultSet rs = pstmt.executeQuery();
+//            while (rs.next()) {
+//                Task task = new Task(
+//                        rs.getString("task_title"),
+//                        rs.getString("task_description"),
+//                        rs.getString("assigned_user"),
+//                        rs.getBoolean("is_completed"),
+//                        rs.getInt("priority"),
+//                        rs.getDate("due_date").toLocalDate()
+//                );
+//                //task.setTaskId(rs.getInt("id");
+//                filteredTasks.add(task);
+//            }
+//
+//        }catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return filteredTasks;
+//    }
+    public List<Task> filterByTaskDUEDate(User user, LocalDate dueDate,String condition) {
+        StringBuilder jpql = new StringBuilder("SELECT t FROM Task t WHERE t.assignedUser = :user AND ");
         switch(condition){
             case "before":
-                sql += "due_date < ? ";
+                jpql.append("dueDate < :duedate ");
                 break;
             case "after":
-                sql += "due_date > ? ";
+                jpql.append("dueDate > :duedate ");
                 break;
             case "on":
-                sql += "due_date = ? ";
+                jpql.append("dueDate = :duedate ");
                 break;
             default:
                 System.out.println("Invalid condition: Use 'before', 'after', or 'on'");
-                return filteredTasks;
+                return new ArrayList<>();
         }
-        try(PreparedStatement pstmt = conn.prepareStatement(sql)){
-            pstmt.setString(1, username);
-            pstmt.setDate(2, Date.valueOf(dueDate));
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                Task task = new Task(
-                        rs.getString("task_title"),
-                        rs.getString("task_description"),
-                        rs.getString("assigned_user"),
-                        rs.getBoolean("is_completed"),
-                        rs.getInt("priority"),
-                        rs.getDate("due_date").toLocalDate()
-                );
-                //task.setTaskId(rs.getInt("id");
-                filteredTasks.add(task);
-            }
+        TypedQuery<Task> query=em.createQuery(jpql.toString(), Task.class);
+        query.setParameter("user",user);
+        query.setParameter("duedate", dueDate);
 
-        }catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return filteredTasks;
+        return query.getResultList();
+
+
     }
 
 

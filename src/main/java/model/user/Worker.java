@@ -44,7 +44,7 @@ public class Worker extends User {
                 scanner.nextLine();
                 switch (choice) {
                     case 1:
-                        taskManager.listUserTasks(getUsername());
+                        taskManager.listUserTasks(this);
                         break;
                     case 2:
                         System.out.print("Enter task title to mark as completed: ");
@@ -57,7 +57,7 @@ public class Worker extends User {
                             String completedInput = scanner.nextLine().trim().toLowerCase();
                             if (completedInput.equals("true") || completedInput.equals("false")) {
                                 boolean completed = Boolean.parseBoolean(completedInput);
-                                taskManager.filterTaskByCompletedStatus(getUsername(), completed);
+                                taskManager.filterTaskByCompletedStatus(this, completed);
                             } else {
                                 throw new InputMismatchException();
                             }
@@ -73,7 +73,7 @@ public class Worker extends User {
                             if (priority < 1 || priority > 3) {
                                 throw new InputMismatchException();
                             } else {
-                                taskManager.filterTaskByPriority(getUsername(), priority);
+                                taskManager.filterTaskByPriority(this, priority);
                             }
 
                         } catch (InputMismatchException e) {
@@ -92,7 +92,7 @@ public class Worker extends User {
                             if (!condition.equals("before") && !condition.equals("after") && !condition.equals("on")) {
                                 System.out.println("Invalid option! Please enter 'before', 'after', or 'on'.");
                             } else {
-                                taskManager.filterTaskByDueDate(getUsername(), date, condition);
+                                taskManager.filterTaskByDueDate(this, date, condition);
                             }
 
                         } catch (DateTimeParseException e) {

@@ -2,6 +2,7 @@ package service;
 
 import dao.TaskDAO;
 import model.task.Task;
+import model.user.User;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
@@ -49,8 +50,8 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
     }
 
 
-    public List<Task> listUserTasks(String username){
-        List<Task>  taskList= taskDAO.getUserTasks(username);
+    public List<Task> listUserTasks(User user){
+        List<Task> taskList= taskDAO.getUserTasks(user);
         for(Task task:taskList){
             System.out.println(task);
         }
@@ -62,12 +63,12 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
 
     public void markTaskAsCompleted(String username, String taskTitle){
 
-        boolean isSuccessfulQuery=taskDAO.taskCompleted(taskTitle,username);
+        boolean isSuccessfulQuery=taskDAO.taskCompleted(taskTitle);
         System.out.println(isSuccessfulQuery ? "Task Completed successfully" : "Task wasn't Completed successfully");
     }
 
-    public List<Task>  filterTaskByCompletedStatus(String username,boolean completed){
-        List<Task> filteredTasks=taskDAO.filterByCompletion(username,completed);
+    public List<Task>  filterTaskByCompletedStatus(User user,boolean completed){
+        List<Task> filteredTasks=taskDAO.filterByCompletion(user,completed);
         for (Task task:filteredTasks){
             System.out.println(task);
         }
@@ -76,8 +77,8 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
     }
 
 
-    public List<Task> filterTaskByPriority(String username,int priority){
-        List<Task> filteredTasks=taskDAO.filterByTaskPriority(username,priority);
+    public List<Task> filterTaskByPriority(User user,int priority){
+        List<Task> filteredTasks=taskDAO.filterByTaskPriority(user,priority);
         for (Task task:filteredTasks){
             System.out.println(task);
         }
@@ -86,8 +87,8 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
     }
 
 
-public List<Task> filterTaskByDueDate(String username,LocalDate dueDate,String condition){
-        List<Task> filteredTasks=taskDAO.filterByTaskDUEDate(username,dueDate,condition);
+public List<Task> filterTaskByDueDate(User user,LocalDate dueDate,String condition){
+        List<Task> filteredTasks=taskDAO.filterByTaskDUEDate(user,dueDate,condition);
         for (Task task:filteredTasks){
             System.out.println(task);
         }

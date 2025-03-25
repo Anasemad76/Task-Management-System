@@ -74,7 +74,8 @@ public class Admin extends User {
                                 System.out.println("Invalid input! Please enter a valid date (yyyy-MM-dd).");
                             }
                         }
-                        taskManager.addTask(new Task(taskTitle, taskDesc, assignedUser, false, priority, dueDate));
+                        taskManager.addTask(new Task(taskTitle, taskDesc,this, false, priority, dueDate));
+
                         break;
                     case 2:
                         taskManager.listTasks();

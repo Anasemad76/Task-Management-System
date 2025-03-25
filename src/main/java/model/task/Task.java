@@ -76,6 +76,9 @@ public class Task {
     public void setIsCompleted(boolean isCompleted) {
         this.isCompleted = isCompleted;
     }
+    public void setAssignedUser(User assignedUser) {
+        this.assignedUser = assignedUser;
+    }
 
     public int getPriority() {
         return priority;
