@@ -90,6 +90,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task: " + taskTitle + " | Assigned To: " + assignedUser.getUsername() + " | Completed: " + isCompleted;
+        return "Task: " + taskTitle + " | desc : " + taskDescription +  " | Assigned To: " + assignedUser.getUsername() + " | priority : " + priority + " | date: " + dueDate + " | Completed: " + isCompleted;
     }
 }

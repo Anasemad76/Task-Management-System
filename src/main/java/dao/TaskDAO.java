@@ -5,6 +5,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transaction;
+import model.task.HighPriorityTask;
 import model.task.Task;
 import model.user.User;
 
@@ -156,6 +157,7 @@ public class TaskDAO {
             if(task != null) {
                 em.remove(task);
                 tx.commit();
+                em.clear(); // Clears cache, forcing a fresh DB fetch, used after executing executeUpdate() queries to ensure updated data is loaded.
                 return true;
             }
             return false;
@@ -192,6 +194,7 @@ public class TaskDAO {
             query.setParameter("title", taskTitle);
             int row=query.executeUpdate(); // Executes update (this is used for UPDATE, DELETE, INSERT)
             tx.commit();
+            em.clear();
             return row>0;
 
         } catch (Exception e) {
@@ -256,6 +259,7 @@ public class TaskDAO {
 //    }
 
     // for terminal
+    //FADELY UPDATE EL PRIORITY W MAWDOO3 EL HIGHTASK AND TASKssssssssssssssssssssssssssssssssss
     public boolean editTask(String taskTitle, Map<String,Object> updates) {
         if (updates.isEmpty()) {
             System.out.println("No updates provided.");
@@ -271,13 +275,51 @@ public class TaskDAO {
         Query query = em.createQuery(sql.toString());
         EntityTransaction tx = em.getTransaction();
         try {
+            updates.forEach((key, value) -> {
+
+                if (key.equals("assignedUser")) {
+                    TypedQuery<User> query2 = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
+                    query2.setParameter("username", value);
+                    User user = query2.getSingleResult();
+                    query.setParameter(key, user);
+
+                } else if (key.equals("priority")) {
+                    if ( Integer.parseInt(value.toString()) == 3 ) {
+                        TypedQuery<Task> query2=em.createQuery("SELECT t FROM Task t WHERE t.taskTitle = :title", Task.class);
+                        query2.setParameter("title", taskTitle);
+                        Task task = query2.getSingleResult();
+                        boolean isSuccess=removeTask(taskTitle);
+                        //em.flush(); // Ensure deletion is executed before inserting a new one
+                        if (isSuccess) {
+                            addNewTask(task.getAssignedUser().getUsername(),new HighPriorityTask(task.getTaskTitle(), task.getTaskDescription(),false,task.getDueDate()));
+
+                        }
+
+                    }else{
+                        TypedQuery<Task> query2=em.createQuery("SELECT t FROM Task t WHERE t.taskTitle = :title", Task.class);
+                        query2.setParameter("title", taskTitle);
+                        Task task = query2.getSingleResult();
+                        int oldPriority=task.getPriority();
+                        if (oldPriority==3){
+                            boolean isSuccess=removeTask(taskTitle);
+                            //em.flush();
+                            if (isSuccess) {
+                                addNewTask(task.getAssignedUser().getUsername(),new Task(task.getTaskTitle(), task.getTaskDescription(),false,Integer.parseInt(value.toString()),task.getDueDate()));
+                            }
+                        }
+
+                    }
+
+                } else {
+                    query.setParameter(key, value);
+                }
+
+            });
             tx.begin();
-            // PROBLEM WITH THIS CODE EL MAFROUD A SELECT USER FROM USERNAME EL AWEL !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            updates.forEach((key, value) -> query.setParameter(key, value));
             query.setParameter("title", taskTitle);
             int rows = query.executeUpdate();
             tx.commit();
-            em.clear();
+            em.clear(); // Clear persistence context to force fresh data
             if (rows > 0) {
                 System.out.println("Task updated successfully");
                 return true;
@@ -358,6 +400,7 @@ public class TaskDAO {
             query.setParameter("title", taskTitle);
             int rows = query.executeUpdate();
             tx.commit();
+            em.clear();
             return rows > 0;
         } catch (Exception e) {
             if (tx.isActive()) {
@@ -396,13 +439,11 @@ public class TaskDAO {
 //        return tasks;
 //    }
     public List<Task> filterByCompletion(User user,boolean isCompleted) {
-            List<Task> filteredTasks = new ArrayList<>();
-            for (Task task : user.getTasks()){ // this is will trigger call to database
-                if(task.getIsCompleted() == isCompleted){
-                    filteredTasks.add(task);
-                }
-            }
-            return filteredTasks;
+        TypedQuery<Task> query = em.createQuery(
+                "SELECT t FROM Task t WHERE t.assignedUser = :user AND t.isCompleted = :completed", Task.class);
+        query.setParameter("user", user);
+        query.setParameter("completed", isCompleted);
+        return query.getResultList();
     }
 
 //    public List<Task> filterByTaskPriority(String username,int priority) {
@@ -498,6 +539,33 @@ public class TaskDAO {
 
         return query.getResultList();
 
+
+    }
+    public boolean approveTaskByAdmin(String taskTitle) {
+        EntityTransaction tx = em.getTransaction();
+        try{
+            tx.begin();
+            TypedQuery<Long> query= em.createQuery("SELECT COUNT(*) FROM Task t WHERE t.taskTitle = :title AND t.isCompleted = true", Long.class);
+            query.setParameter("title", taskTitle);
+            Long count = query.getSingleResult();
+            if (count == 0) {
+                System.out.println("Task must be completed before approval!");
+                tx.rollback();
+                return false;
+            }
+            Query query2 = em.createQuery("UPDATE HighPriorityTask t SET t.isApproved = true WHERE t.taskTitle = :title");
+            query2.setParameter("title", taskTitle);
+            int rows = query2.executeUpdate();
+            tx.commit();
+            em.clear();
+            return rows > 0;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        }
 
     }
 

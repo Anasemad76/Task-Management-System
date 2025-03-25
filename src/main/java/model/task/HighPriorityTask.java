@@ -26,4 +26,8 @@ public class HighPriorityTask extends Task {
     public int getPriority() {
             return HIGH_PRIORITY;
     }
+    @Override
+    public String toString() {
+        return super.toString()+ " | approved : " +isApproved;
+    }
 }

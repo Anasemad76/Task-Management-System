@@ -37,6 +37,14 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
 
     }
 
+    public boolean approveTask(String taskTitle){
+        boolean isSuccessful=taskDAO.approveTaskByAdmin(taskTitle);
+        if (isSuccessful) {
+            System.out.println("Task approved successfully");
+        }
+        return isSuccessful;
+    }
+
 
 
     public List<Task> listTasks(){

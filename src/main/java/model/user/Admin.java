@@ -1,5 +1,6 @@
 package model.user;
 
+import model.task.HighPriorityTask;
 import service.AdminTaskService;
 import model.task.Task;
 
@@ -36,7 +37,8 @@ public class Admin extends User {
                 System.out.println("2. View All Tasks");
                 System.out.println("3. Delete Task");
                 System.out.println("4. Edit Task");
-                System.out.println("5. Logout");
+                System.out.println("5. Approve completed Task");
+                System.out.println("6. Logout");
                 System.out.print("Choose an option: ");
                 int choice = scanner.nextInt();
                 scanner.nextLine();
@@ -74,8 +76,12 @@ public class Admin extends User {
                                 System.out.println("Invalid input! Please enter a valid date (yyyy-MM-dd).");
                             }
                         }
-                        taskManager.addTask(assignedUser,new Task(taskTitle, taskDesc,false, priority, dueDate));
+                        if(priority==3){
+                            taskManager.addTask(assignedUser, new HighPriorityTask(taskTitle, taskDesc, false, dueDate));
 
+                        }else {
+                            taskManager.addTask(assignedUser, new Task(taskTitle, taskDesc, false, priority, dueDate));
+                        }
                         break;
                     case 2:
                         taskManager.listTasks();
@@ -122,6 +128,12 @@ public class Admin extends User {
                         taskManager.editTask(taskTit2, updates);
                         break;
                     case 5:
+                        System.out.println("Enter Task Title to approve: ");
+                        String approveTaskTitle = scanner.nextLine();
+                        taskManager.approveTask(approveTaskTitle);
+                        break;
+
+                    case 6:
                         System.out.println("Logging out...");
                         return;
                     default:

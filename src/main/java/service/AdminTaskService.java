@@ -9,5 +9,6 @@ public interface AdminTaskService {
     boolean addTask(String username,Task task);
     boolean editTask(String taskTitle, Map<String,Object> updates);
     boolean deleteTask(String taskTitle);
+    boolean approveTask(String taskTitle);
     List<Task> listTasks();
 }
