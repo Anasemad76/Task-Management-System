@@ -110,10 +110,18 @@ public class TaskDAO {
 //        }
 //        return false;
 //    }
-    public boolean addNewTask(Task task) {
+    public boolean addNewTask(String username,Task task) {
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
+            TypedQuery<User> query = em.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
+            query.setParameter("username", username);
+            User user = query.getSingleResult();
+            if (user == null) {
+                System.out.println(" Assigned Worker not found!");
+                return false;
+            }
+            task.setAssignedUser(user);
             em.persist(task);
             tx.commit();
             return true;
@@ -180,7 +188,7 @@ public class TaskDAO {
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
-            Query query=em.createQuery("DELETE FROM Task t WHERE t.taskTitle = :title", Task.class);
+            Query query=em.createQuery("DELETE FROM Task t WHERE t.taskTitle = :title");
             query.setParameter("title", taskTitle);
             int row=query.executeUpdate(); // Executes update (this is used for UPDATE, DELETE, INSERT)
             tx.commit();
@@ -264,10 +272,12 @@ public class TaskDAO {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
+            // PROBLEM WITH THIS CODE EL MAFROUD A SELECT USER FROM USERNAME EL AWEL !!!!!!!!!!!!!!!!!!!!!!!!!!!!
             updates.forEach((key, value) -> query.setParameter(key, value));
             query.setParameter("title", taskTitle);
             int rows = query.executeUpdate();
             tx.commit();
+            em.clear();
             if (rows > 0) {
                 System.out.println("Task updated successfully");
                 return true;
@@ -343,7 +353,8 @@ public class TaskDAO {
     public boolean taskCompleted(String taskTitle) {
         EntityTransaction tx = em.getTransaction();
         try {
-            Query query = em.createQuery("UPDATE Task t SET t.isCompleted = true WHERE t.taskTitle = :title", Task.class);
+            tx.begin();
+            Query query = em.createQuery("UPDATE Task t SET t.isCompleted = true WHERE t.taskTitle = :title");
             query.setParameter("title", taskTitle);
             int rows = query.executeUpdate();
             tx.commit();

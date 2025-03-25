@@ -17,8 +17,8 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
     }
 
 
-    public boolean addTask(Task task) {
-        boolean isSuccessfulQuery=taskDAO.addNewTask(task);
+    public boolean addTask(String username,Task task) {
+        boolean isSuccessfulQuery=taskDAO.addNewTask(username,task);
         System.out.println(isSuccessfulQuery ? "Task added successfully" : "Task wasn't added successfully");
         return isSuccessfulQuery;
     }

@@ -21,6 +21,8 @@ public class TaskManagementSystem {
             TaskManager taskManager = new TaskManager(taskDAO);
 
             System.out.println("Welcome to Task Management System");
+//            userManager.registerUser("admin","1",true,taskManager);
+//        userManager.registerUser("user2","1",false,taskManager);
 
 
             try{

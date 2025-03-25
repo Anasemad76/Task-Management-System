@@ -74,7 +74,7 @@ public class Admin extends User {
                                 System.out.println("Invalid input! Please enter a valid date (yyyy-MM-dd).");
                             }
                         }
-                        taskManager.addTask(new Task(taskTitle, taskDesc,this, false, priority, dueDate));
+                        taskManager.addTask(assignedUser,new Task(taskTitle, taskDesc,false, priority, dueDate));
 
                         break;
                     case 2:
@@ -97,19 +97,19 @@ public class Admin extends User {
                             }
                             switch (toBeEdited) {
                                 case "title":
-                                    toBeEdited = "task_title";
+                                    toBeEdited = "taskTitle";
                                     break;
                                 case "description":
-                                    toBeEdited = "task_description";
+                                    toBeEdited = "taskDescription";
                                     break;
                                 case "username":
-                                    toBeEdited = "assigned_user";
+                                    toBeEdited = "assignedUser";
                                     break;
                                 case "priority":
                                     toBeEdited = "priority";
                                     break;
                                 case "date":
-                                    toBeEdited = "due_date";
+                                    toBeEdited = "dueDate";
                                     break;
                                 default:
                                     System.out.println("Invalid field! Try again.");
