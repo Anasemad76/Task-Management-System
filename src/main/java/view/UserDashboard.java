@@ -91,6 +91,7 @@ public class UserDashboard  extends JFrame {
                                         }
 
                                         printFilteredTasks(model,filteredTasks,"high");
+                                        return;
 
                                     }
                                     printFilteredTasks(model,filteredTasks);
@@ -188,6 +189,9 @@ public class UserDashboard  extends JFrame {
 
 
     private void loadWorkerTasks(DefaultTableModel model) {
+        String[] columnNames = {"Task ID","Task Title", "Task Description", "Priority", "Due Date", "Completed"};
+        model = (DefaultTableModel) tasksTable.getModel();
+        model.setColumnIdentifiers(columnNames);
         model.setRowCount(0);
         // Fetch tasks assigned to this worker from the database
         List<Task> workerTasks =taskManager.listUserTasks(user);
@@ -221,6 +225,8 @@ public class UserDashboard  extends JFrame {
     private void printFilteredTasks(DefaultTableModel model,List<Task> taskList,String condition) {
         model.setRowCount(0);
         for (Task task : taskList) {
+            System.out.println("Task Class: " + task.getClass().getName());
+            System.out.println(" is approved ? "+((HighPriorityTask)task).getisApproved());
             model.addRow(new Object[]{
                     task.getTaskId(),
                     task.getTaskTitle(),
@@ -228,7 +234,7 @@ public class UserDashboard  extends JFrame {
                     task.getPriority(),
                     task.getDueDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     task.getIsCompleted(),
-                    ((HighPriorityTask)task).getisApproved()
+                    ((HighPriorityTask) task).getisApproved() ? "Approved ✅" : "Not Approved ❌"
             });
 
         }

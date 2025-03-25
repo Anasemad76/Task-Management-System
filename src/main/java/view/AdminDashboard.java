@@ -158,13 +158,19 @@ public class AdminDashboard extends JFrame {
                         System.out.println(changedValues);
                         boolean isSuccessful=false;
                         if (changedValues.containsKey("isApproved")) {
-                             isSuccessful=taskManager.approveTask(tasksTable.getValueAt(row, 1).toString());
-                            if (!isSuccessful) {
-                                JOptionPane.showMessageDialog(tasksTable, "Error happened in database , Task must be completed before approval! ", "Try Again", JOptionPane.ERROR_MESSAGE);
+                            if(changedValues.get("isApproved").toString().equals("true")){
+                                isSuccessful=taskManager.approveTask(tasksTable.getValueAt(row, 1).toString());
+                                if (!isSuccessful) {
+                                    JOptionPane.showMessageDialog(tasksTable, "Error happened in database , Task must be completed before approval! ", "Try Again", JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
+                                changedValues.remove("isApproved");
+                                System.out.println(changedValues);
+                            }else{
+                                JOptionPane.showMessageDialog(tasksTable, "Only allowed value is true! ", "Try Again", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
-                            changedValues.remove("isApproved");
-                            System.out.println(changedValues);
+
                         }else if( ! changedValues.isEmpty() ){
                             isSuccessful = taskManager.editTask(titleDB, changedValues);
                         }
@@ -284,6 +290,10 @@ public class AdminDashboard extends JFrame {
     }
 
     private void loadWAllTasks(DefaultTableModel model){
+        String[] columnNames = {"ID", "Title", "Description", "Assigned User", "Completed", "Priority", "Due Date"};
+        model = (DefaultTableModel) tasksTable.getModel();
+        model.setColumnIdentifiers(columnNames);
+        model.setRowCount(0);
         model.setRowCount(0);
         List<Task> allTasks =taskManager.listTasks();
         for(Task task:allTasks){
