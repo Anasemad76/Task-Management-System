@@ -8,6 +8,7 @@ import java.sql.Connection;
 import dao.DatabaseConnection;
 import dao.TaskDAO;
 import dao.UserDAO;
+import jakarta.persistence.EntityManager;
 import model.user.User;
 import service.TaskManager;
 import service.UserManager;
@@ -74,12 +75,12 @@ public class Register extends JFrame{
     }
 
 public static void main(String[] args) {
-    Connection connection = null;
+
     try {
-        connection= DatabaseConnection.getConnection();
-        UserDAO userDAO = new UserDAO(connection);
-        TaskDAO taskDAO = new TaskDAO(connection);
-        UserManager userManager = new UserManager(userDAO);
+        EntityManager em=DatabaseConnection.getEntityManager();
+        UserDAO registerDao = new UserDAO(em);
+        TaskDAO taskDAO = new TaskDAO(em);
+        UserManager userManager = new UserManager(registerDao);
         TaskManager taskManager = new TaskManager(taskDAO);
         Register r=new Register(userManager,taskManager);
     } catch (Exception e) {

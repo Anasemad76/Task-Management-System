@@ -1,9 +1,11 @@
 package service;
 
 import dao.TaskDAO;
+import model.task.HighPriorityTask;
 import model.task.Task;
 import model.user.User;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
@@ -69,10 +71,11 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
 
 
 
-    public void markTaskAsCompleted(String username, String taskTitle){
+    public boolean markTaskAsCompleted(String username, String taskTitle){
 
         boolean isSuccessfulQuery=taskDAO.taskCompleted(taskTitle);
         System.out.println(isSuccessfulQuery ? "Task Completed successfully" : "Task wasn't Completed successfully");
+        return isSuccessfulQuery;
     }
 
     public List<Task>  filterTaskByCompletedStatus(User user,boolean completed){
@@ -83,7 +86,14 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
         return filteredTasks;
 
     }
+    public List<HighPriorityTask> filterAllHighPriorityTasks(){
+        List<HighPriorityTask> filteredTasks=taskDAO.filterHighTaskPriority();
+        for (HighPriorityTask task:filteredTasks){
+            System.out.println(task);
+        }
+        return filteredTasks;
 
+    }
 
     public List<Task> filterTaskByPriority(User user,int priority){
         List<Task> filteredTasks=taskDAO.filterByTaskPriority(user,priority);

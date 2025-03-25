@@ -1,5 +1,6 @@
 package service;
 
+import model.task.HighPriorityTask;
 import model.task.Task;
 
 import java.util.List;
@@ -10,5 +11,6 @@ public interface AdminTaskService {
     boolean editTask(String taskTitle, Map<String,Object> updates);
     boolean deleteTask(String taskTitle);
     boolean approveTask(String taskTitle);
+    List<HighPriorityTask> filterAllHighPriorityTasks();
     List<Task> listTasks();
 }

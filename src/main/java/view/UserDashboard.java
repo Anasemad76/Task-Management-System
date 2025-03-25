@@ -1,15 +1,16 @@
 package view;
 
+import model.task.HighPriorityTask;
 import model.task.Task;
 import model.user.User;
-import model.user.Worker;
 import service.TaskManager;
-import model.task.Task;
 import service.UserManager;
 
+import javax.imageio.plugins.tiff.TIFFTag;
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -27,14 +28,17 @@ public class UserDashboard  extends JFrame {
     private JPanel filterPanel;
     private JPanel tablePanel;
     private JScrollPane scrollPane;
+    private JButton markAsCompletedButton;
     private User user;
     private TaskManager taskManager;
     private UserManager userManager;
+    String titleMarkAsCompletedTask;
 
     public UserDashboard(User user,TaskManager taskManager,UserManager userManager) {
         this.user = user;
         this.taskManager=taskManager;
         this.userManager=userManager;
+        this.titleMarkAsCompletedTask=null;
 
 
         // Table column names
@@ -59,6 +63,10 @@ public class UserDashboard  extends JFrame {
         filterCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String[] columnNames = {"Task ID","Task Title", "Task Description", "Priority", "Due Date", "Completed"};
+                DefaultTableModel model = (DefaultTableModel) tasksTable.getModel();
+                model.setColumnIdentifiers(columnNames);
+
                 String selectedFilter = (String) filterCombo.getSelectedItem();
                 switch (selectedFilter) {
                     case "All":
@@ -72,7 +80,19 @@ public class UserDashboard  extends JFrame {
                                 if (priority < 1 || priority > 3) {
                                     JOptionPane.showMessageDialog(filterCombo, "Invalid priority! Enter a value between 1 and 3.");
                                 } else {
-                                    List<Task> filteredTasks=taskManager.filterTaskByPriority(user.getUsername(), priority);
+                                    List<Task> filteredTasks=taskManager.filterTaskByPriority(user, priority);
+                                    if (priority==3){
+                                        String[] highPriorityColumns ={"Task ID","Task Title", "Task Description", "Priority", "Due Date", "Completed","Approved"};
+                                         model = (DefaultTableModel) tasksTable.getModel();
+
+                                        // Check if the "Approve" column already exists to avoid duplication
+                                        if (model.getColumnCount() != highPriorityColumns.length) {
+                                            model.setColumnIdentifiers(highPriorityColumns);
+                                        }
+
+                                        printFilteredTasks(model,filteredTasks,"high");
+
+                                    }
                                     printFilteredTasks(model,filteredTasks);
                                 }
                             } catch (NumberFormatException ex) {
@@ -96,7 +116,7 @@ public class UserDashboard  extends JFrame {
                                         options,
                                         options[0] // Default selection
                                 );
-                                List<Task> filteredTasks=taskManager.filterTaskByDueDate(user.getUsername(), dueDate,condition);
+                                List<Task> filteredTasks=taskManager.filterTaskByDueDate(user, dueDate,condition);
                                 printFilteredTasks(model,filteredTasks);
                             } catch (DateTimeParseException ex) {
                                 JOptionPane.showMessageDialog(filterCombo, "Invalid date format! Please use YYYY-MM-DD.");
@@ -112,7 +132,7 @@ public class UserDashboard  extends JFrame {
                         ) == JOptionPane.YES_OPTION;
 
 
-                        List<Task> filteredTasks=taskManager.filterTaskByCompletedStatus(user.getUsername(), isCompleted);
+                        List<Task> filteredTasks=taskManager.filterTaskByCompletedStatus(user, isCompleted);
                         printFilteredTasks(model,filteredTasks);
                 }
             }
@@ -126,11 +146,51 @@ public class UserDashboard  extends JFrame {
 
             }
         });
+
+        markAsCompletedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = tasksTable.getSelectedRow();
+                System.out.println(row);
+                if (row < 0) {
+                    JOptionPane.showMessageDialog(markAsCompletedButton, "Please select a row from the table", "Try Again", JOptionPane.ERROR_MESSAGE);
+
+                } else {
+                    boolean isSuccessful=taskManager.markTaskAsCompleted(user.getUsername(), titleMarkAsCompletedTask);
+                    if(isSuccessful){
+                        JOptionPane.showMessageDialog(tasksTable, "Task Marked As Completed Successfully", "Ok", JOptionPane.INFORMATION_MESSAGE);
+                        loadWorkerTasks(model);
+                    }else{
+                        JOptionPane.showMessageDialog(tasksTable, "Error happened in database", "Try Again", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                }
+
+            }
+        });
+
+
+        tasksTable.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) { // Prevents multiple triggers
+                int row = tasksTable.getSelectedRow();
+                if (row != -1) { // Ensure a row is selected
+                    titleMarkAsCompletedTask = model.getValueAt(row, 1).toString();
+                    System.out.println("Selected Task Title: " + titleMarkAsCompletedTask);
+                }
+            }
+        });
+
+
+
+
+
     }
+
+
     private void loadWorkerTasks(DefaultTableModel model) {
         model.setRowCount(0);
         // Fetch tasks assigned to this worker from the database
-        List<Task> workerTasks =taskManager.listUserTasks(user.getUsername());
+        List<Task> workerTasks =taskManager.listUserTasks(user);
         for(Task task:workerTasks){
             model.addRow(new Object[]{
                     task.getTaskId(),
@@ -158,5 +218,22 @@ public class UserDashboard  extends JFrame {
         }
 
     }
+    private void printFilteredTasks(DefaultTableModel model,List<Task> taskList,String condition) {
+        model.setRowCount(0);
+        for (Task task : taskList) {
+            model.addRow(new Object[]{
+                    task.getTaskId(),
+                    task.getTaskTitle(),
+                    task.getTaskDescription(),
+                    task.getPriority(),
+                    task.getDueDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    task.getIsCompleted(),
+                    ((HighPriorityTask)task).getisApproved()
+            });
+
+        }
+
+    }
+
 
 }

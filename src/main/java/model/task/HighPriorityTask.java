@@ -21,6 +21,9 @@ public class HighPriorityTask extends Task {
         super(taskTitle, taskDescription,isCompleted, HIGH_PRIORITY, dueDate);
 
     }
+    public boolean getisApproved() {
+        return isApproved;
+    }
 
     @Override
     public int getPriority() {
@@ -28,6 +31,6 @@ public class HighPriorityTask extends Task {
     }
     @Override
     public String toString() {
-        return super.toString()+ " | approved : " +isApproved;
+        return super.toString()+ " | approved : " +isApproved ;
     }
 }

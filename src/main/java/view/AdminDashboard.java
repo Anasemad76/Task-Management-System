@@ -1,5 +1,6 @@
 package view;
 
+import model.task.HighPriorityTask;
 import model.task.Task;
 import model.user.User;
 import service.TaskManager;
@@ -33,6 +34,7 @@ public class AdminDashboard extends JFrame {
     private JComboBox priorityComboBox;
     private JButton editButton;
     private JButton logOutButton;
+    private JButton viewHighPriorityTaskButton;
     private TaskManager taskManager;
     private User user;
     private UserManager userManager;
@@ -46,12 +48,11 @@ public class AdminDashboard extends JFrame {
         setSize(800, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        String[] columnNames = {"ID","Title", "Description","Assigned User","Completed", "Priority", "Due Date"};
+        String[] columnNames = {"ID", "Title", "Description", "Assigned User", "Completed", "Priority", "Due Date"};
 
         // Table model to hold data
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
         tasksTable.setModel(model);
-
 
 
         loadWAllTasks(model);
@@ -66,36 +67,42 @@ public class AdminDashboard extends JFrame {
                 String title = titleField.getText();
                 String description = descField.getText();
                 String assignedUser = assignedUserField.getText();
-                String isCompleted=(String) completedStatusComboBox.getSelectedItem();
+                String isCompleted = (String) completedStatusComboBox.getSelectedItem();
                 String priority = (String) priorityComboBox.getSelectedItem();
                 String dueDate = dateField.getText();
-                if(title.isEmpty() || description.isEmpty() || assignedUser.isEmpty() || priority.isEmpty() || dueDate.isEmpty()) {
-                    JOptionPane.showMessageDialog(tasksTable,"Please Enter all fields","Try Again",JOptionPane.ERROR_MESSAGE);
-                }else{
+                if (title.isEmpty() || description.isEmpty() || assignedUser.isEmpty() || priority.isEmpty() || dueDate.isEmpty()) {
+                    JOptionPane.showMessageDialog(tasksTable, "Please Enter all fields", "Try Again", JOptionPane.ERROR_MESSAGE);
+                } else {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    try{
+                    try {
                         LocalDate localDate = LocalDate.parse(dueDate, formatter);
-                        Task newTask=new Task(title,description,assignedUser,Boolean.parseBoolean(isCompleted),Integer.parseInt(priority),localDate);
-                        boolean isSuccessful=taskManager.addTask(newTask);
+                        Task newTask = null;
+                        if (priority.equals("3")) {
+                            newTask = new HighPriorityTask(title, description, Boolean.parseBoolean(isCompleted), localDate);
+
+                        } else {
+                            newTask = new Task(title, description, Boolean.parseBoolean(isCompleted), Integer.parseInt(priority), localDate);
+                        }
+                        boolean isSuccessful = taskManager.addTask(assignedUser, newTask);
                         if (isSuccessful) {
                             model.addRow(new Object[]{
                                     newTask.getTaskId(),
                                     newTask.getTaskTitle(),
                                     newTask.getTaskDescription(),
-                                    newTask.getAssignedUser(),
+                                    newTask.getAssignedUser().getUsername(),
                                     newTask.getIsCompleted(),
                                     newTask.getPriority(),
                                     newTask.getDueDate()
+
                             });
 
-                        }else{
-                            JOptionPane.showMessageDialog(tasksTable,"Error happened in database","Try Again",JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(tasksTable, "Error happened in database", "Try Again", JOptionPane.ERROR_MESSAGE);
 
                         }
-                    }catch (DateTimeParseException ex){
-                        JOptionPane.showMessageDialog(tasksTable,"Invalid date format! Please enter in yyyy-MM-dd format.","Try Again",JOptionPane.ERROR_MESSAGE);
+                    } catch (DateTimeParseException ex) {
+                        JOptionPane.showMessageDialog(tasksTable, "Invalid date format! Please enter in yyyy-MM-dd format.", "Try Again", JOptionPane.ERROR_MESSAGE);
                     }
-
 
 
                 }
@@ -120,14 +127,14 @@ public class AdminDashboard extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int row = tasksTable.getSelectedRow();
                 if (row < 0) {
-                    JOptionPane.showMessageDialog(tasksTable,"Please select a row from the table","Try Again",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(tasksTable, "Please select a row from the table", "Try Again", JOptionPane.ERROR_MESSAGE);
 
-                }else{
-                    boolean isSuccessful=taskManager.deleteTask(tasksTable.getValueAt(row,1).toString());
+                } else {
+                    boolean isSuccessful = taskManager.deleteTask(tasksTable.getValueAt(row, 1).toString());
                     if (isSuccessful) {
                         model.removeRow(row);
-                    }else{
-                        JOptionPane.showMessageDialog(tasksTable,"Error happened in database","Try Again",JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(tasksTable, "Error happened in database", "Try Again", JOptionPane.ERROR_MESSAGE);
                     }
 
 
@@ -142,29 +149,38 @@ public class AdminDashboard extends JFrame {
                 int row = tasksTable.getSelectedRow();
                 System.out.println(row);
                 if (row < 0) {
-                    JOptionPane.showMessageDialog(deleteButton,"Please select a row from the table","Try Again",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(deleteButton, "Please select a row from the table", "Try Again", JOptionPane.ERROR_MESSAGE);
 
-                }else{
-                    if(changedValues.isEmpty()){
-                        JOptionPane.showMessageDialog(deleteButton,"Select something to change","Try Again",JOptionPane.ERROR_MESSAGE);
-                    }
-                    else{
-                        boolean isSuccessful=taskManager.editTask(titleDB,changedValues);
+                } else {
+                    if (changedValues.isEmpty()) {
+                        JOptionPane.showMessageDialog(deleteButton, "Select something to change", "Try Again", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        System.out.println(changedValues);
+                        boolean isSuccessful=false;
+                        if (changedValues.containsKey("isApproved")) {
+                             isSuccessful=taskManager.approveTask(tasksTable.getValueAt(row, 1).toString());
+                            if (!isSuccessful) {
+                                JOptionPane.showMessageDialog(tasksTable, "Error happened in database , Task must be completed before approval! ", "Try Again", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                            changedValues.remove("isApproved");
+                            System.out.println(changedValues);
+                        }else if( ! changedValues.isEmpty() ){
+                            isSuccessful = taskManager.editTask(titleDB, changedValues);
+                        }
+
                         if (isSuccessful) {
-                            JOptionPane.showMessageDialog(tasksTable,"Task updated Successfully","Ok",JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(tasksTable, "Task updated Successfully", "Ok", JOptionPane.INFORMATION_MESSAGE);
                             loadWAllTasks(model);
                             changedValues.clear();
 
-                        }else{
-                            JOptionPane.showMessageDialog(tasksTable,"Error happened in database","Try Again",JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(tasksTable, "Error happened in database", "Try Again", JOptionPane.ERROR_MESSAGE);
                         }
                     }
 
 
-
-
                 }
-
 
 
             }
@@ -182,26 +198,34 @@ public class AdminDashboard extends JFrame {
                             titleDB = model.getValueAt(row, 1).toString();
                         }
 
-                        // 7ot hena asamy el feilds fel entity msh el table for JPA
+
                         switch (columnName) {
                             case "Title":
-                                columnName = "task_title";
+                                columnName = "taskTitle";
                                 break;
                             case "Description":
-                                 columnName = "task_description";
-                                 break;
+                                columnName = "taskDescription";
+                                break;
                             case "Assigned User":
-                                columnName = "assigned_user";
+                                columnName = "assignedUser";
                                 break;
                             case "Completed":
-                                 columnName = "is_completed";
-                                 break;
+                                columnName = "isCompleted";
+                                newValue=Boolean.parseBoolean(newValue.toString());
+                                break;
                             case "Priority":
-                                 columnName = "priority";
-                                 break;
+                                columnName = "priority";
+                                newValue=Integer.parseInt(newValue.toString());
+                                break;
                             case "Due Date":
-                                 columnName = "due_date";
-                                 break;
+                                columnName = "dueDate";
+                                newValue = LocalDate.parse(newValue.toString());
+                                break;
+
+                            case "Approve":
+                                columnName = "isApproved";
+                                newValue = Boolean.parseBoolean(newValue.toString());
+                                break;
 
                         }
                         changedValues.put(columnName, newValue);
@@ -220,7 +244,45 @@ public class AdminDashboard extends JFrame {
 
             }
         });
+        viewHighPriorityTaskButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String[] highPriorityColumns = {"ID", "Title", "Description", "Assigned User", "Completed", "Priority", "Due Date", "Approve"};
+
+                DefaultTableModel model = (DefaultTableModel) tasksTable.getModel();
+
+                // Check if the "Approve" column already exists to avoid duplication
+                if (model.getColumnCount() != highPriorityColumns.length) {
+                    model.setColumnIdentifiers(highPriorityColumns);
+                }
+
+                // Clear table rows before inserting new data
+                model.setRowCount(0);
+
+                // Fetch high-priority tasks (priority == 3) from database
+                List<HighPriorityTask> highPriorityTasks = taskManager.filterAllHighPriorityTasks();
+
+
+                for (HighPriorityTask task : highPriorityTasks) {
+                    Object[] rowData = {
+                            task.getTaskId(),
+                            task.getTaskTitle(),
+                            task.getTaskDescription(),
+                            task.getAssignedUser().getUsername(),
+                            task.getIsCompleted(),
+                            task.getPriority(),
+                            task.getDueDate(),
+                            task.getisApproved()
+                    };
+                    model.addRow(rowData);
+                }
+
+
+            }
+
+        });
     }
+
     private void loadWAllTasks(DefaultTableModel model){
         model.setRowCount(0);
         List<Task> allTasks =taskManager.listTasks();
@@ -229,7 +291,7 @@ public class AdminDashboard extends JFrame {
                     task.getTaskId(),
                     task.getTaskTitle(),
                     task.getTaskDescription(),
-                    task.getAssignedUser(),
+                    task.getAssignedUser().getUsername(),
                     task.getIsCompleted(),
                     task.getPriority(),
                     task.getDueDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),

@@ -265,9 +265,15 @@ public class TaskDAO {
             System.out.println("No updates provided.");
             return false;
         }
+        
         StringBuilder sql = new StringBuilder("UPDATE Task t SET ");
+
         updates.forEach( (key, value) -> {
-            sql.append("t.").append(key).append(" = :").append(key).append(", ");
+
+                sql.append("t.").append(key).append(" = :").append(key).append(", ");
+
+
+
         });
 
         sql.setLength(sql.length()-2);
@@ -282,6 +288,7 @@ public class TaskDAO {
                     query2.setParameter("username", value);
                     User user = query2.getSingleResult();
                     query.setParameter(key, user);
+
 
                 } else if (key.equals("priority")) {
                     if ( Integer.parseInt(value.toString()) == 3 ) {
@@ -478,6 +485,7 @@ public class TaskDAO {
         return query.getResultList();
     }
 
+
 //    public List<Task> filterByTaskDUEDate(String username, LocalDate dueDate,String condition) {
 //        List<Task> filteredTasks = new ArrayList<>();
 //        String sql = "SELECT * FROM tasks WHERE assigned_user = ? AND ";
@@ -567,6 +575,11 @@ public class TaskDAO {
             return false;
         }
 
+    }
+    public List<HighPriorityTask> filterHighTaskPriority() {
+        TypedQuery<HighPriorityTask> query = em.createQuery("SELECT t FROM HighPriorityTask t WHERE t.priority = :priority", HighPriorityTask.class);
+        query.setParameter("priority", "3");
+        return query.getResultList();
     }
 
 
