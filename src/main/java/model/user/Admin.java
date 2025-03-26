@@ -125,7 +125,7 @@ public class Admin extends User {
                             String updated = scanner.nextLine();
                             updates.put(toBeEdited, updated);
                         }
-                        taskManager.editTask(taskTit2, updates);
+                        taskManager.editTask(taskTit2, updates,false);
                         break;
                     case 5:
                         System.out.println("Enter Task Title to approve: ");

@@ -17,10 +17,12 @@ public class HighPriorityTask extends Task {
         super(taskTitle, taskDescription, assignedUser, isCompleted, HIGH_PRIORITY, dueDate);
 
     }
+
     public HighPriorityTask(String taskTitle, String taskDescription, boolean isCompleted, LocalDate dueDate) {
         super(taskTitle, taskDescription,isCompleted, HIGH_PRIORITY, dueDate);
 
     }
+
     public boolean getisApproved() {
         return isApproved;
     }

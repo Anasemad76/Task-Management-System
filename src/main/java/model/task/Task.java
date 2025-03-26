@@ -55,6 +55,7 @@ public class Task {
 
 
 
+
     public String getTaskTitle() {
         return taskTitle;
     }
@@ -82,6 +83,9 @@ public class Task {
 
     public int getPriority() {
         return priority;
+    }
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public LocalDate  getDueDate() {

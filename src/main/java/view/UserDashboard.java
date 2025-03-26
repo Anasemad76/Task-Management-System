@@ -6,10 +6,7 @@ import model.user.User;
 import service.TaskManager;
 import service.UserManager;
 
-import javax.imageio.plugins.tiff.TIFFTag;
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +26,7 @@ public class UserDashboard  extends JFrame {
     private JPanel tablePanel;
     private JScrollPane scrollPane;
     private JButton markAsCompletedButton;
+    private JButton backButton;
     private User user;
     private TaskManager taskManager;
     private UserManager userManager;
@@ -39,6 +37,8 @@ public class UserDashboard  extends JFrame {
         this.taskManager=taskManager;
         this.userManager=userManager;
         this.titleMarkAsCompletedTask=null;
+
+
 
 
         // Table column names
@@ -180,9 +180,6 @@ public class UserDashboard  extends JFrame {
                 }
             }
         });
-
-
-
 
 
     }

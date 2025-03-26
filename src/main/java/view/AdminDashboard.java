@@ -35,14 +35,17 @@ public class AdminDashboard extends JFrame {
     private JButton editButton;
     private JButton logOutButton;
     private JButton viewHighPriorityTaskButton;
+    private JButton backButton;
     private TaskManager taskManager;
     private User user;
     private UserManager userManager;
-    private String titleDB;
+    private String titleId;
+    private String titleTitle;
     public AdminDashboard(User user, TaskManager taskManager, UserManager userManager) {
         this.taskManager = taskManager;
         this.user = user;
         this.userManager = userManager;
+        backButton.setVisible(false);
         // Table column names
         setTitle("Worker Dashboard");
         setSize(800, 400);
@@ -155,41 +158,71 @@ public class AdminDashboard extends JFrame {
                     if (changedValues.isEmpty()) {
                         JOptionPane.showMessageDialog(deleteButton, "Select something to change", "Try Again", JOptionPane.ERROR_MESSAGE);
                     } else {
-                        System.out.println(changedValues);
-                        boolean isSuccessful=false;
-                        if (changedValues.containsKey("isApproved")) {
-                            if(changedValues.get("isApproved").toString().equals("true")){
-                                isSuccessful=taskManager.approveTask(tasksTable.getValueAt(row, 1).toString());
-                                if (!isSuccessful) {
-                                    JOptionPane.showMessageDialog(tasksTable, "Error happened in database , Task must be completed before approval! ", "Try Again", JOptionPane.ERROR_MESSAGE);
+                            System.out.println("HERE : " + changedValues);
+                            boolean isSuccessful = false;
+                            if (changedValues.containsKey("isApproved")) {
+                                if (changedValues.get("isApproved").toString().equals("true")) {
+                                    isSuccessful = taskManager.approveTask(tasksTable.getValueAt(row, 1).toString());
+                                    if (!isSuccessful) {
+                                        JOptionPane.showMessageDialog(tasksTable, "Error happened in database , Task must be completed before approval! ", "Try Again", JOptionPane.ERROR_MESSAGE);
+                                        changedValues.remove("isApproved");
+                                        return;
+
+                                    }
+                                    changedValues.remove("isApproved");
+                                    System.out.println(changedValues);
+                                } else {
+                                    JOptionPane.showMessageDialog(tasksTable, "Only allowed value is true! ", "Try Again", JOptionPane.ERROR_MESSAGE);
                                     return;
                                 }
-                                changedValues.remove("isApproved");
-                                System.out.println(changedValues);
-                            }else{
-                                JOptionPane.showMessageDialog(tasksTable, "Only allowed value is true! ", "Try Again", JOptionPane.ERROR_MESSAGE);
-                                return;
+                            }
+                            if (changedValues.containsKey("priority")) {
+                                    System.out.println("ENTERED HERE");
+                                    isSuccessful = taskManager.editTaskPriorty(Integer.parseInt(titleId), (Integer) changedValues.get("priority"));
+                                    if (!isSuccessful) {
+                                        JOptionPane.showMessageDialog(tasksTable, "Error happened in database , Task Priority wasn't updated successfully! ", "Try Again", JOptionPane.ERROR_MESSAGE);
+                                        changedValues.remove("priority");
+                                        return;
+                                    }
+                                    changedValues.remove("priority");
+                                    System.out.println(changedValues);
                             }
 
-                        }else if( ! changedValues.isEmpty() ){
-                            isSuccessful = taskManager.editTask(titleDB, changedValues);
-                        }
+                            if (!changedValues.isEmpty()) { // used to update anything else but priority & isApproved
+                                    //TO EDIT BY ID IF THE THING I WANTED TO EDIT WAS TITLE
+                                    System.out.println("HERE 2 : " + changedValues);
 
-                        if (isSuccessful) {
-                            JOptionPane.showMessageDialog(tasksTable, "Task updated Successfully", "Ok", JOptionPane.INFORMATION_MESSAGE);
-                            loadWAllTasks(model);
-                            changedValues.clear();
+                                    if (titleId == null) {
+                                        JOptionPane.showMessageDialog(tasksTable, "Cannot Edit Task ID!", "Try Again", JOptionPane.ERROR_MESSAGE);
+                                        return;
+                                    }
+                                if (changedValues.containsKey("title")) {
+                                    isSuccessful = taskManager.editTask(titleId, changedValues, true);
 
-                        } else {
-                            JOptionPane.showMessageDialog(tasksTable, "Error happened in database", "Try Again", JOptionPane.ERROR_MESSAGE);
-                        }
+                                }else{
+                                    isSuccessful = taskManager.editTask(titleTitle, changedValues, false);
+
+                                }
+
+                            }
+
+                                if (isSuccessful) {
+                                    JOptionPane.showMessageDialog(tasksTable, "Task updated Successfully", "Ok", JOptionPane.INFORMATION_MESSAGE);
+                                    loadWAllTasks(model);
+                                    changedValues.clear();
+
+                                } else {
+                                    JOptionPane.showMessageDialog(tasksTable, "Error happened in database", "Try Again", JOptionPane.ERROR_MESSAGE);
+
+                                }
+                            }
                     }
 
 
                 }
 
 
-            }
+
         });
         model.addTableModelListener(new TableModelListener() {
             @Override
@@ -201,7 +234,8 @@ public class AdminDashboard extends JFrame {
                         Object newValue = model.getValueAt(row, col);
                         String columnName = model.getColumnName(col);
                         if (col != 0) {
-                            titleDB = model.getValueAt(row, 1).toString();
+                            titleId = model.getValueAt(row, 0).toString();
+                            titleTitle=model.getValueAt(row, 1).toString();
                         }
 
 
@@ -253,6 +287,7 @@ public class AdminDashboard extends JFrame {
         viewHighPriorityTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                backButton.setVisible(true);
                 String[] highPriorityColumns = {"ID", "Title", "Description", "Assigned User", "Completed", "Priority", "Due Date", "Approve"};
 
                 DefaultTableModel model = (DefaultTableModel) tasksTable.getModel();
@@ -287,9 +322,16 @@ public class AdminDashboard extends JFrame {
             }
 
         });
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadWAllTasks(model);
+            }
+        });
     }
 
     private void loadWAllTasks(DefaultTableModel model){
+        backButton.setVisible(false);
         String[] columnNames = {"ID", "Title", "Description", "Assigned User", "Completed", "Priority", "Due Date"};
         model = (DefaultTableModel) tasksTable.getModel();
         model.setColumnIdentifiers(columnNames);

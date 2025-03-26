@@ -14,15 +14,16 @@ The **Task Management System** is a **Java-based** application designed to help 
 ## 🛠️ Technologies Used
 - **Java** (JDK 11+)
 - **Java Swing** (GUI Implementation)
-- **JDBC** (Java Database Connectivity)
+- **JPA** (Java Persistence API)
 - **SQL Server** (Database Management)
 
 ## 🔗 Branches
-| Branch   | Description |
-|----------|------------|
-| `master` | Core functionality without Database or GUI |
-| `DB-Dev` | Introduced database functionality |
-| `GUI-Dev` | Added GUI features |
+| Branch    | Description                                |
+|-----------|--------------------------------------------|
+| `master`  | Core functionality without Database or GUI |
+| `DB-Dev`  | Introduced database functionality          |
+| `GUI-Dev` | Added GUI features                         |
+| `JPA-Dev` | Introduced JPA database & new features     |
 
 ## 📦 Installation & Setup
 

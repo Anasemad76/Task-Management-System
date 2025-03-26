@@ -33,10 +33,22 @@ public class TaskManager implements AdminTaskService, WorkerTaskService {
     }
 
     // for terminal
-    public boolean editTask(String taskTitle, Map<String,Object> updates){
-           boolean isSuccessful= taskDAO.editTask(taskTitle,updates);
+    public boolean editTask(String taskTitle, Map<String,Object> updates,boolean isGUI){
+        boolean isSuccessful=false;
+        if (isGUI) {
+                 isSuccessful= taskDAO.editTask(Integer.parseInt(taskTitle),updates);
+
+        }else{
+                 isSuccessful= taskDAO.editTask(taskTitle,updates);
+        }
+
            return isSuccessful;
 
+    }
+    public boolean editTaskPriorty(int id, int newPriority) {
+        boolean isSuccessful=taskDAO.editTaskPriort(id, newPriority);
+        System.out.println(isSuccessful ? "Task Priority updated successfully" : "Task wasn't updated successfully");
+        return isSuccessful;
     }
 
     public boolean approveTask(String taskTitle){
