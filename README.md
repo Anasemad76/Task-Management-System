@@ -1,6 +1,6 @@
 # Task Management System
 
-## 📌 Overview
+##  📌 Overview
 The **Task Management System** is a **Java-based** application designed to help users manage tasks efficiently. It provides **role-based access control, task assignments**, and an **intuitive GUI** for an enhanced user experience.
 
 ## 🚀 Features
@@ -16,6 +16,7 @@ The **Task Management System** is a **Java-based** application designed to help 
 - **Java Swing** (GUI Implementation)
 - **JPA** (Java Persistence API)
 - **SQL Server** (Database Management)
+
 
 ## 🔗 Branches
 | Branch    | Description                                |
